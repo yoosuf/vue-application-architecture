@@ -12,6 +12,11 @@
   "scripts": {
     "typecheck": "vue-tsc -b --force",
     "lint": "eslint . --fix",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\" \"demo/**/*.ts\"",
+    "demo": "vite demo",
+    "demo:build": "vite build demo"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
   }
 }

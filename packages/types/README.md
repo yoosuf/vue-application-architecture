@@ -24,6 +24,17 @@ Needs the `Theme` type? That's a design-system concern — it lives in
 ## Local commands
 
 ```bash
+pnpm --filter @vue-application-architecture/types demo         # static showcase site (Book/BookCategory)
+pnpm --filter @vue-application-architecture/types demo:build   # production build of the showcase
 pnpm --filter @vue-application-architecture/types typecheck
 pnpm --filter @vue-application-architecture/types lint
 ```
+
+## Demo
+
+`pnpm demo:types` from the repo root (or `pnpm --filter @vue-application-architecture/types demo`)
+boots a zero-dependency, vanilla-TS page that renders `Book` grid samples, the
+`BookCategory` union, and the `featured` flag — every value is type-checked
+against the package's public surface (`@vue-application-architecture/types` and the
+`@vue-application-architecture/types/book` subpath). It contains no runtime code from the package;
+only `import type`, so it proves the types compile standalone.

@@ -12,7 +12,7 @@ export default defineConfigWithVueTs(
 
   {
     name: 'types/files-to-ignore',
-    ignores: ['**/node_modules/**', '**/eslint.config.ts'],
+    ignores: ['**/dist/**', '**/node_modules/**', '**/eslint.config.ts'],
   },
 
   vueTsConfigs.recommended,
