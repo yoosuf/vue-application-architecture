@@ -1,22 +1,15 @@
 <script setup lang="ts">
 import * as stylex from '@stylexjs/stylex'
-import {
-  focusRing,
-  reducedMotion,
-} from '../../../../../../packages/design-system/src/styles/shared.stylex'
-import {
-  colors,
-  motion,
-  radii,
-  typography,
-} from '../../../../../../packages/design-system/src/styles/tokens.stylex'
+import { focusRing, reducedMotion } from '../../styles/shared.stylex'
+import { colors, motion, radii, typography } from '../../styles/tokens.stylex'
 
 const props = withDefaults(
   defineProps<{
-    label: string
+    label?: string
     selected?: boolean
   }>(),
   {
+    label: '',
     selected: false,
   },
 )
@@ -29,7 +22,8 @@ const styles = stylex.create({
   chip: {
     display: 'inline-flex',
     alignItems: 'center',
-    padding: '6px 14px',
+    minHeight: 32,
+    padding: '5px 14px',
     borderRadius: radii.circle,
     fontSize: typography.sizeSm,
     fontWeight: typography.weightMedium,
@@ -75,6 +69,6 @@ const styles = stylex.create({
     "
     @click="emit('select')"
   >
-    {{ props.label }}
+    <slot>{{ props.label }}</slot>
   </button>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as stylex from '@stylexjs/stylex'
-import { visuallyHidden } from '../../../../../packages/design-system/src/styles/shared.stylex'
+import { visuallyHidden } from '../../styles/shared.stylex'
 
 defineProps<{
   message: string

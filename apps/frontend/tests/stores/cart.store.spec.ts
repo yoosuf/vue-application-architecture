@@ -57,7 +57,9 @@ describe('cart store', () => {
 
     const expectedSubtotal = first.priceCents * 2 + second.priceCents
     const expectedShipping =
-      expectedSubtotal >= SHIPPING_FREE_THRESHOLD_CENTS ? 0 : FLAT_SHIPPING_CENTS
+      expectedSubtotal >= SHIPPING_FREE_THRESHOLD_CENTS
+        ? 0
+        : FLAT_SHIPPING_CENTS
     expect(cart.subtotalCents).toBe(expectedSubtotal)
     expect(cart.shippingCents).toBe(expectedShipping)
     expect(cart.totalCents).toBe(expectedSubtotal + expectedShipping)

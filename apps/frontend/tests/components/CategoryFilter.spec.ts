@@ -1,49 +1,39 @@
 import { mount } from '@vue/test-utils'
-import { createPinia, setActivePinia } from 'pinia'
 import CategoryFilter from '@/modules/catalog/components/CategoryFilter.vue'
-import {
-  ALL_CATEGORIES,
-  useCatalogStore,
-} from '@/modules/catalog/stores/catalog.store'
+import { ALL_CATEGORIES } from '@/modules/catalog/stores/catalog.store'
+import type { CategoryFilter as CategoryFilterValue } from '@/modules/catalog/stores/catalog.store'
+
+const makeProps = (modelValue: CategoryFilterValue = ALL_CATEGORIES) => ({
+  modelValue,
+  categories: [ALL_CATEGORIES, 'Fiction', 'Design'] as CategoryFilterValue[],
+})
 
 describe('CategoryFilter', () => {
-  beforeEach(() => {
-    setActivePinia(createPinia())
+  it('renders one chip per category with the value first', () => {
+    const wrapper = mount(CategoryFilter, { props: makeProps() })
+    expect(wrapper.findAll('button').map((button) => button.text())).toEqual([
+      ALL_CATEGORIES,
+      'Fiction',
+      'Design',
+    ])
   })
 
-  it('renders one chip per category with "All" first', () => {
-    const wrapper = mount(CategoryFilter)
-    const catalog = useCatalogStore()
-
-    const labels = wrapper.findAll('button').map((button) => button.text())
-
-    expect(labels).toEqual(catalog.categories)
-    expect(labels[0]).toBe(ALL_CATEGORIES)
-  })
-
-  it('marks the initially selected category as pressed', () => {
-    const wrapper = mount(CategoryFilter)
-    const first = wrapper.get('button')
-    expect(first.attributes('aria-pressed')).toBe('true')
-  })
-
-  it('updates the selected category when a chip is clicked', async () => {
-    const wrapper = mount(CategoryFilter)
-    const catalog = useCatalogStore()
-
+  it('marks the selected category as pressed', () => {
+    const wrapper = mount(CategoryFilter, {
+      props: makeProps('Fiction'),
+    })
     const fiction = wrapper
       .findAll('button')
-      .find((button) => button.text() === 'Fiction')
+      .find((button) => button.text() === 'Fiction')!
+    expect(fiction.attributes('aria-pressed')).toBe('true')
+  })
 
-    expect(fiction).toBeTruthy()
-    await fiction!.trigger('click')
-
-    expect(catalog.selectedCategory).toBe('Fiction')
-    expect(fiction!.attributes('aria-pressed')).toBe('true')
-
-    const all = wrapper
+  it('emits update:modelValue when a chip is clicked', async () => {
+    const wrapper = mount(CategoryFilter, { props: makeProps() })
+    const fiction = wrapper
       .findAll('button')
-      .find((button) => button.text() === ALL_CATEGORIES)
-    expect(all!.attributes('aria-pressed')).toBe('false')
+      .find((button) => button.text() === 'Fiction')!
+    await fiction.trigger('click')
+    expect(wrapper.emitted('update:modelValue')).toEqual([['Fiction']])
   })
 })

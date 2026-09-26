@@ -12,7 +12,13 @@ import {
   vueTsConfigs,
 } from '@vue/eslint-config-typescript'
 
-const FEATURE_MODULES = new Set(['catalog', 'favorites', 'cart', 'checkout'])
+const FEATURE_MODULES = new Set([
+  'catalog',
+  'favorites',
+  'cart',
+  'checkout',
+  'customer',
+])
 const ALL_MODULES = new Set(['core', ...FEATURE_MODULES])
 
 type ImportExportNode =

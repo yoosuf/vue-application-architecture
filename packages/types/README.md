@@ -7,8 +7,8 @@ hot-reloads everywhere.
 
 ## Public surface
 
-| Export              | Contents               |
-| ------------------- | ---------------------- |
+| Export                                     | Contents               |
+| ------------------------------------------ | ---------------------- |
 | `@vue-application-architecture/types`      | `Book`, `BookCategory` |
 | `@vue-application-architecture/types/book` | `Book`, `BookCategory` |
 

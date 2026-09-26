@@ -1,17 +1,24 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { books as generatedBooks } from '../mocks/books'
-import type { Book, BookCategory } from '@vue-application-architecture/types/book'
+import type {
+  Book,
+  BookCategory,
+} from '@vue-application-architecture/types/book'
 
 export const ALL_CATEGORIES = 'All'
 
 export type CategoryFilter = BookCategory | typeof ALL_CATEGORIES
+
+export type SortOrder =
+  'featured' | 'rating' | 'price-asc' | 'price-desc' | 'title'
 
 export const useCatalogStore = defineStore('catalog', () => {
   const books = ref<Book[]>(generatedBooks)
 
   const searchQuery = ref('')
   const selectedCategory = ref<CategoryFilter>(ALL_CATEGORIES)
+  const sortOrder = ref<SortOrder>('featured')
 
   const featuredBook = computed(() => books.value.find((book) => book.featured))
 
@@ -38,12 +45,32 @@ export const useCatalogStore = defineStore('catalog', () => {
     })
   })
 
+  const sortedBooks = computed(() => {
+    const list = filteredBooks.value
+    switch (sortOrder.value) {
+      case 'rating':
+        return [...list].sort((a, b) => b.rating - a.rating)
+      case 'price-asc':
+        return [...list].sort((a, b) => a.priceCents - b.priceCents)
+      case 'price-desc':
+        return [...list].sort((a, b) => b.priceCents - a.priceCents)
+      case 'title':
+        return [...list].sort((a, b) => a.title.localeCompare(b.title))
+      default:
+        return list
+    }
+  })
+
   function setSearchQuery(value: string) {
     searchQuery.value = value
   }
 
   function setCategory(category: CategoryFilter) {
     selectedCategory.value = category
+  }
+
+  function setSortOrder(order: SortOrder) {
+    sortOrder.value = order
   }
 
   function findBookById(id: string): Book | undefined {
@@ -74,11 +101,14 @@ export const useCatalogStore = defineStore('catalog', () => {
     books,
     searchQuery,
     selectedCategory,
+    sortOrder,
     featuredBook,
     categories,
     filteredBooks,
+    sortedBooks,
     setSearchQuery,
     setCategory,
+    setSortOrder,
     findBookById,
     relatedBooks,
   }

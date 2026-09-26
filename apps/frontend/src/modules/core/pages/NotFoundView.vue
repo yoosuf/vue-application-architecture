@@ -1,24 +1,11 @@
 <script setup lang="ts">
-import * as stylex from '@stylexjs/stylex'
 import EmptyState from '@vue-application-architecture/design-system/ui/molecules/EmptyState.vue'
 import AppButton from '@vue-application-architecture/design-system/ui/atoms/AppButton.vue'
-import {
-  layout,
-  spacing,
-} from '../../../../../../packages/design-system/src/styles/tokens.stylex'
-
-const styles = stylex.create({
-  section: {
-    maxWidth: layout.pageMaxWidth,
-    margin: '0 auto',
-    paddingInline: layout.pageGutter,
-    paddingBlock: spacing.xxxl,
-  },
-})
+import PageSection from '@vue-application-architecture/design-system/ui/molecules/PageSection.vue'
 </script>
 
 <template>
-  <section v-bind="stylex.attrs(styles.section)">
+  <PageSection spacing="xxxl">
     <EmptyState
       heading-level="h1"
       title="Page not found"
@@ -26,5 +13,5 @@ const styles = stylex.create({
     >
       <AppButton :to="{ name: 'explore' }">Back to Explore</AppButton>
     </EmptyState>
-  </section>
+  </PageSection>
 </template>

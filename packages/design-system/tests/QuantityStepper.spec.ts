@@ -25,9 +25,9 @@ describe('QuantityStepper', () => {
   it('disables minus at the minimum', () => {
     const wrapper = mount(QuantityStepper, { props: { modelValue: 1 } })
     expect(
-      wrapper.get('button[aria-label="Decrease quantity"]').attributes(
-        'disabled',
-      ),
+      wrapper
+        .get('button[aria-label="Decrease quantity"]')
+        .attributes('disabled'),
     ).toBeDefined()
   })
 
@@ -36,9 +36,9 @@ describe('QuantityStepper', () => {
       props: { modelValue: 5, max: 5 },
     })
     expect(
-      wrapper.get('button[aria-label="Increase quantity"]').attributes(
-        'disabled',
-      ),
+      wrapper
+        .get('button[aria-label="Increase quantity"]')
+        .attributes('disabled'),
     ).toBeDefined()
   })
 })

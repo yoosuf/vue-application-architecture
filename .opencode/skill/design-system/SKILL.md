@@ -19,12 +19,20 @@ Vitest suite (`tests/`, mounting components through a StyleX-compiling
 - `./styles/global.css`, `./styles/tokens.css` (CSS custom properties,
   `data-ds-theme="dark"` switch), and the StyleX files `./styles/tokens.stylex`,
   `./styles/themes.stylex`, `./styles/shared.stylex`
-- `./ui/atoms[/X.vue]` — AppButton, IconButton, Loader, Rating, SearchField, ThemeToggle
-- `./ui/molecules[/X.vue]` — EmptyState, SearchBar
+- `./ui/atoms[/X.vue]` — AppButton, Chip, IconButton, Loader, NativeSelect (styled native
+  `<select>`, `modelValue`/`options`/`flex`), NavLink, QuantityStepper,
+  Rating, SearchField, SectionHeading, SkipLink, StatusAnnouncer, TextButton,
+  TextField, ThemeToggle,
+  Toggle (role=switch, `v-model:checked`, disabled + reduced-motion safe)
+- `./ui/molecules[/X.vue]` — Drawer, EmptyState, FilterGroup, FormSection, MainContent, PageSection, ResponsiveGrid (responsive 5→1 column grid, `gap: 'md'|'lg'`, `minColumns` to keep 2 columns on small screens), SearchBar, Tabs (accessible tablist, `v-model` active index, arrow-key nav), Breadcrumbs (`items: { label, to? }[]`, current = no `to`)
 
 Shelf's product domain types (`Book`, `BookCategory`) live in `@vue-application-architecture/types`,
-and domain-bound presentational components live in the app's `shared` module
-(`apps/frontend/src/modules/shared`) — neither belongs in the kit.
+and domain-bound presentational components live in the app's feature modules
+(book/cart/checkout/favorites components under `apps/frontend/src/modules/*`) —
+neither belongs in the kit. `NavLink`, `SkipLink`, `StatusAnnouncer`, `MainContent`,
+`PageSection`, `SectionHeading`, `Chip` and `FilterGroup` were lifted out of the
+app because they are generic; brand- and domain-owned pieces (`AppShell`,
+`AppHeader`, `AppLogo`, `AppFooter`, all `Book*`/`Cart*` components) stay in the app.
 
 Source-first: no build step, hot-reloads in the app. App.ts tsconfig/alias
 resolve the package to source. Tokens have **two faces** — StyleX vars

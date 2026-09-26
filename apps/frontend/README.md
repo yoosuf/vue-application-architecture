@@ -61,8 +61,10 @@ app.
 apps/frontend/src/
   app/                    # composition root — may depend on any module
     App.vue               # root: theme + route announce/focus wiring
-    components/           # shell pieces: AppShell, SkipLink, MainContent, AppFooter,
-                          #   StatusAnnouncer, AppHeader (wires header stores), AppLogo, NavigationLink
+    components/           # shell pieces: AppShell, AppHeader (wires header stores),
+                          #   AppLogo, AppFooter (AppShell + footer are brand-owned);
+                          #   skip link, main content, announcer and nav links come
+                          #   from the design system
     router/index.ts       # appRoutes = module routes + lazy 404 catch-all
   modules/
     core/                 # app-level fallback page and preferences
@@ -71,18 +73,19 @@ apps/frontend/src/
       index.ts            # facade: NotFoundView and preferences
     catalog/              # book components + catalog; depends on core, favorites
       stores/catalog.store.ts, mocks/ (Faker data)
-      components/         # BookCard/Grid/Cover/Meta, FeaturedBook, CategoryFilter, CategoryChip, BookDetails
+      components/         # BookCard/Grid/Cover/Meta, FeaturedBook, CategoryFilter, BookDetails
       pages/              # ExploreView, BookDetailsView (details + related books)
       route.ts, index.ts
     favorites/            # depends on: design-system, core, catalog (facades)
       stores/favorites.store.ts, components/FavoriteButton.vue
-      pages/FavoritesView.vue
-      route.ts, index.ts
+      index.ts
 packages/types/src/          # @vue-application-architecture/types — Book, BookCategory
 packages/design-system/src/   # @vue-application-architecture/design-system — generic, domain-free UI kit
   styles/                 # design tokens, light/dark theme objects, shared styles
-  ui/atoms/               # AppButton, IconButton, Loader, Rating, SearchField, ThemeToggle
-  ui/molecules/           # SearchBar, EmptyState
+  ui/atoms/               # AppButton, Chip, IconButton, Loader, NativeSelect, NavLink,
+                          #   QuantityStepper, Rating, SearchField, SectionHeading, SkipLink,
+                          #   StatusAnnouncer, TextButton, TextField, ThemeToggle, Toggle
+  ui/molecules/           # Breadcrumbs, EmptyState, FilterGroup, MainContent, PageSection, ResponsiveGrid, SearchBar, Tabs
 ```
 
 ### Module boundaries
@@ -93,12 +96,12 @@ are **enforced by a custom ESLint rule** (`modular/boundaries` in
 `eslint.config.ts`); the design-system package is separately enforced to be
 **self-contained** (`ds/self-contained` in `packages/design-system`):
 
-| Source                             | May import from                                                                                 |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `@vue-application-architecture/design-system`             | third-party packages only                                                                       |
-| `core` (NotFoundView, preferences) | design-system, `@vue-application-architecture/types`, and third-party packages                                         |
-| `catalog`, `favorites`             | design-system (any file), `@vue-application-architecture/types`, sibling **facades only** (incl. `core` and `catalog`) |
-| `app`                              | anything (composition root)                                                                     |
+| Source                                        | May import from                                                                                                        |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `@vue-application-architecture/design-system` | third-party packages only                                                                                              |
+| `core` (NotFoundView, preferences)            | design-system, `@vue-application-architecture/types`, and third-party packages                                         |
+| `catalog`, `favorites`                        | design-system (any file), `@vue-application-architecture/types`, sibling **facades only** (incl. `core` and `catalog`) |
+| `app`                                         | anything (composition root)                                                                                            |
 
 Feature modules may never reach into a sibling module's internals — only its
 `index.ts`. The graph stays acyclic:

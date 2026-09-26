@@ -34,6 +34,10 @@ const styles = stylex.create({
     userSelect: 'none',
     cursor: 'pointer',
     transition: `color ${motion.base} ${motion.easeOut}, background-color ${motion.base} ${motion.easeOut}, box-shadow ${motion.base} ${motion.easeOut}, transform ${motion.fast} ${motion.easeOut}`,
+    '@media (max-width: 640px)': {
+      width: 44,
+      height: 44,
+    },
     ':hover': {
       color: colors.textPrimary,
       backgroundColor: colors.surfaceHover,

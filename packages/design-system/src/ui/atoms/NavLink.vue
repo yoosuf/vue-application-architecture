@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import * as stylex from '@stylexjs/stylex'
 import type { RouteLocationRaw } from 'vue-router'
-import {
-  focusRing,
-  reducedMotion,
-} from '../../../../../packages/design-system/src/styles/shared.stylex'
+import { focusRing, reducedMotion } from '../../styles/shared.stylex'
 import {
   colors,
   motion,
   radii,
   spacing,
   typography,
-} from '../../../../../packages/design-system/src/styles/tokens.stylex'
+} from '../../styles/tokens.stylex'
 
 const props = withDefaults(
   defineProps<{
@@ -34,6 +31,9 @@ const styles = stylex.create({
     lineHeight: typography.leadingSnug,
     textDecoration: 'none',
     transition: `color ${motion.base} ${motion.easeOut}, background-color ${motion.base} ${motion.easeOut}`,
+    '@media (max-width: 640px)': {
+      paddingInline: spacing.xs,
+    },
     ':hover': {
       color: colors.textPrimary,
       backgroundColor: colors.surfaceHover,

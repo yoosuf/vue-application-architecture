@@ -8,9 +8,7 @@ describe('TextField', () => {
     })
     const input = wrapper.get('input')
     expect(wrapper.get('label').text()).toBe('Email')
-    expect(input.attributes('id')).toBe(
-      wrapper.get('label').attributes('for'),
-    )
+    expect(input.attributes('id')).toBe(wrapper.get('label').attributes('for'))
   })
 
   it('marks required fields', () => {
@@ -26,9 +24,7 @@ describe('TextField', () => {
       props: { modelValue: '', label: 'Email' },
     })
     await wrapper.get('input').setValue('ada@example.com')
-    expect(wrapper.emitted('update:modelValue')).toEqual([
-      ['ada@example.com'],
-    ])
+    expect(wrapper.emitted('update:modelValue')).toEqual([['ada@example.com']])
   })
 
   it('shows an error message and marks the field invalid', () => {

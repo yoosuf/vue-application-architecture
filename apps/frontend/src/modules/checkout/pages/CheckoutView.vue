@@ -3,13 +3,16 @@ import { computed, reactive } from 'vue'
 import * as stylex from '@stylexjs/stylex'
 import AppButton from '@vue-application-architecture/design-system/ui/atoms/AppButton.vue'
 import TextField from '@vue-application-architecture/design-system/ui/atoms/TextField.vue'
+import SectionHeading from '@vue-application-architecture/design-system/ui/atoms/SectionHeading.vue'
 import EmptyState from '@vue-application-architecture/design-system/ui/molecules/EmptyState.vue'
+import FormSection from '@vue-application-architecture/design-system/ui/molecules/FormSection.vue'
+import PageSection from '@vue-application-architecture/design-system/ui/molecules/PageSection.vue'
 import { OrderSummary, useCartStore } from '../../cart'
 import { formatPrice } from '../../cart'
 import { useCheckoutStore } from '../stores/checkout.store'
+import { useCustomerStore } from '../../customer'
 import {
   colors,
-  layout,
   radii,
   spacing,
   typography,
@@ -33,15 +36,30 @@ type FormField = keyof CheckoutForm
 
 const cart = useCartStore()
 const checkout = useCheckoutStore()
+const customer = useCustomerStore()
+
+const preferredShipTo = computed(() => {
+  const current = customer.current
+  if (!current || current.addresses.length === 0) return null
+  return (
+    current.addresses.find(
+      (address) => address.id === current.shippingAddressId,
+    ) ??
+    current.addresses.find(
+      (address) => address.id === current.primaryAddressId,
+    ) ??
+    null
+  )
+})
 
 const form = reactive<CheckoutForm>({
-  email: '',
-  name: '',
-  addressLine1: '',
-  addressLine2: '',
-  city: '',
-  zip: '',
-  country: 'United States',
+  email: customer.current?.email ?? '',
+  name: preferredShipTo.value?.name ?? '',
+  addressLine1: preferredShipTo.value?.addressLine1 ?? '',
+  addressLine2: preferredShipTo.value?.addressLine2 ?? '',
+  city: preferredShipTo.value?.city ?? '',
+  zip: preferredShipTo.value?.zip ?? '',
+  country: preferredShipTo.value?.country ?? 'United States',
   cardName: '',
   cardNumber: '',
   expiry: '',
@@ -107,7 +125,7 @@ function validate(): boolean {
 
 function placeOrder() {
   if (!validate()) return
-  checkout.placeOrder({
+  const order = checkout.placeOrder({
     email: form.email.trim(),
     name: form.name.trim(),
     addressLine1: form.addressLine1.trim(),
@@ -116,6 +134,7 @@ function placeOrder() {
     zip: form.zip.trim(),
     country: form.country.trim(),
   })
+  if (order) customer.recordOrder(order)
 }
 
 const order = computed(() => checkout.lastOrder)
@@ -123,30 +142,18 @@ const order = computed(() => checkout.lastOrder)
 const displayAddress = computed(() => {
   const current = order.value
   if (!current) return ''
-  return [current.name, current.addressLine1, current.addressLine2, `${current.city}, ${current.zip}`, current.country]
+  return [
+    current.name,
+    current.addressLine1,
+    current.addressLine2,
+    `${current.city}, ${current.zip}`,
+    current.country,
+  ]
     .filter(Boolean)
     .join('\n')
 })
 
 const styles = stylex.create({
-  section: {
-    maxWidth: layout.pageMaxWidth,
-    margin: '0 auto',
-    paddingInline: layout.pageGutter,
-    paddingBlock: spacing.xxl,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.lg,
-  },
-  heading: {
-    fontFamily: typography.fontDisplay,
-    fontSize: typography.size3xl,
-    fontWeight: typography.weightBold,
-    letterSpacing: '-0.02em',
-    lineHeight: typography.leadingTight,
-    color: colors.textPrimary,
-    margin: 0,
-  },
   layout: {
     display: 'grid',
     gridTemplateColumns: {
@@ -160,18 +167,6 @@ const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     gap: spacing.lg,
-  },
-  fieldset: {
-    margin: 0,
-    padding: 0,
-    border: 'none',
-  },
-  legend: {
-    fontFamily: typography.fontDisplay,
-    fontSize: typography.sizeXl,
-    fontWeight: typography.weightBold,
-    color: colors.textPrimary,
-    marginBottom: spacing.md,
   },
   fields: {
     display: 'grid',
@@ -242,27 +237,21 @@ const styles = stylex.create({
     color: colors.textSecondary,
     whiteSpace: 'pre-line',
   },
-  subheading: {
-    fontFamily: typography.fontDisplay,
-    fontSize: typography.sizeXl,
-    fontWeight: typography.weightBold,
-    color: colors.textPrimary,
-    margin: 0,
-  },
-  spaced: {
-    marginTop: spacing.sm,
-  },
 })
 </script>
 
 <template>
-  <section v-bind="stylex.attrs(styles.section)" aria-label="Checkout">
+  <PageSection layout="column" label="Checkout">
     <template v-if="order">
-      <h1 v-bind="stylex.attrs(styles.heading)">Thanks{{ order.name ? `, ${order.name.split(' ')[0]}` : '' }} — your order is in.</h1>
+      <SectionHeading level="h1"
+        >Thanks{{ order.name ? `, ${order.name.split(' ')[0]}` : '' }} — your
+        order is in.</SectionHeading
+      >
 
       <div v-bind="stylex.attrs(styles.confirmation)">
-        <p v-bind="stylex.attrs(styles.orderNumber)">
-          Order {{ order.id }}
+        <p v-bind="stylex.attrs(styles.orderNumber)">Order {{ order.id }}</p>
+        <p v-if="customer.isSignedIn" v-bind="stylex.attrs(styles.note)">
+          This order was saved to your account.
         </p>
 
         <div
@@ -287,7 +276,11 @@ const styles = stylex.create({
         </div>
         <div v-bind="stylex.attrs(styles.row)">
           <span>Shipping</span>
-          <span>{{ order.shippingCents === 0 ? 'Free' : formatPrice(order.shippingCents) }}</span>
+          <span>{{
+            order.shippingCents === 0
+              ? 'Free'
+              : formatPrice(order.shippingCents)
+          }}</span>
         </div>
         <div v-bind="stylex.attrs(styles.row, styles.total)">
           <span>Total</span>
@@ -297,7 +290,7 @@ const styles = stylex.create({
         <div v-bind="stylex.attrs(styles.divider)" />
 
         <div>
-          <h2 v-bind="stylex.attrs(styles.subheading)">Ships to</h2>
+          <SectionHeading level="h2" size="2xl">Ships to</SectionHeading>
           <p v-bind="stylex.attrs(styles.address)">{{ displayAddress }}</p>
         </div>
 
@@ -317,12 +310,15 @@ const styles = stylex.create({
     </EmptyState>
 
     <template v-else>
-      <h1 v-bind="stylex.attrs(styles.heading)">Checkout</h1>
+      <SectionHeading level="h1">Checkout</SectionHeading>
 
-      <form v-bind="stylex.attrs(styles.layout)" @submit.prevent="placeOrder" novalidate>
+      <form
+        v-bind="stylex.attrs(styles.layout)"
+        @submit.prevent="placeOrder"
+        novalidate
+      >
         <div v-bind="stylex.attrs(styles.form)">
-          <fieldset v-bind="stylex.attrs(styles.fieldset)">
-            <legend v-bind="stylex.attrs(styles.legend)">Contact</legend>
+          <FormSection legend="Contact">
             <div v-bind="stylex.attrs(styles.fields)">
               <div v-bind="stylex.attrs(styles.full)">
                 <TextField
@@ -336,10 +332,9 @@ const styles = stylex.create({
                 />
               </div>
             </div>
-          </fieldset>
+          </FormSection>
 
-          <fieldset v-bind="stylex.attrs(styles.fieldset)">
-            <legend v-bind="stylex.attrs(styles.legend)">Shipping</legend>
+          <FormSection legend="Shipping">
             <div v-bind="stylex.attrs(styles.fields)">
               <div v-bind="stylex.attrs(styles.full)">
                 <TextField
@@ -391,10 +386,9 @@ const styles = stylex.create({
                 />
               </div>
             </div>
-          </fieldset>
+          </FormSection>
 
-          <fieldset v-bind="stylex.attrs(styles.fieldset)">
-            <legend v-bind="stylex.attrs(styles.legend)">Payment</legend>
+          <FormSection legend="Payment">
             <div v-bind="stylex.attrs(styles.fields)">
               <div v-bind="stylex.attrs(styles.full)">
                 <TextField
@@ -436,13 +430,11 @@ const styles = stylex.create({
                 @update:model-value="setField('cvc', $event)"
               />
             </div>
-            <p
-              v-bind="stylex.attrs(styles.note, styles.spaced)"
-            >
+            <p v-bind="stylex.attrs(styles.note)">
               Demo checkout — no real payment is processed and no card data is
               saved.
             </p>
-          </fieldset>
+          </FormSection>
         </div>
 
         <div v-bind="stylex.attrs(styles.sidebar)">
@@ -454,5 +446,5 @@ const styles = stylex.create({
         </div>
       </form>
     </template>
-  </section>
+  </PageSection>
 </template>

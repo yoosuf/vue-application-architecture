@@ -66,4 +66,27 @@ describe('BookCard', () => {
     const img = wrapper.get('img')
     expect(img.attributes('loading')).toBe('eager')
   })
+
+  it('renders footer action content when a footer slot is provided', () => {
+    const wrapper = mount(BookCard, {
+      props: { book },
+      global: {
+        stubs: { RouterLink: RouterLinkStub },
+      },
+      slots: { footer: '<button class="shoe-cta">Add to Cart</button>' },
+    })
+
+    const cta = wrapper.get('button.shoe-cta')
+    expect(cta.text()).toBe('Add to Cart')
+  })
+
+  it('shows rating and price without an action row when no footer slot is given', () => {
+    const wrapper = mountCard()
+
+    expect(wrapper.find('button.shoe-cta').exists()).toBe(false)
+    expect(wrapper.find('[aria-label*="out of 5"]').exists()).toBe(true)
+    expect(wrapper.get('[aria-label^="Price"]').text()).toContain(
+      (book.priceCents / 100).toFixed(2),
+    )
+  })
 })

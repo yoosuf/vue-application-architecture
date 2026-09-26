@@ -23,7 +23,12 @@ export default defineConfigWithVueTs(
 
   {
     name: 'design-system/files-to-ignore',
-    ignores: ['**/dist/**', '**/dist-demo/**', '**/node_modules/**', '**/eslint.config.ts'],
+    ignores: [
+      '**/dist/**',
+      '**/dist-demo/**',
+      '**/node_modules/**',
+      '**/eslint.config.ts',
+    ],
   },
 
   pluginVue.configs['flat/essential'],

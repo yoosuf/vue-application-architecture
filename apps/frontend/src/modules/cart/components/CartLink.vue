@@ -2,7 +2,11 @@
 import { computed } from 'vue'
 import * as stylex from '@stylexjs/stylex'
 import { ShoppingCart } from 'lucide-vue-next'
-import { focusRing } from '../../../../../../packages/design-system/src/styles/shared.stylex'
+import {
+  buttonReset,
+  focusRing,
+  reducedMotion,
+} from '../../../../../../packages/design-system/src/styles/shared.stylex'
 import {
   colors,
   motion,
@@ -20,17 +24,23 @@ const label = computed(() =>
     : `Cart, ${cart.count} item${cart.count === 1 ? '' : 's'}`,
 )
 
+const badgePop = stylex.keyframes({
+  '0%': { transform: 'scale(0.6)' },
+  '55%': { transform: 'scale(1.15)' },
+  '100%': { transform: 'scale(1)' },
+})
+
 const styles = stylex.create({
-  link: {
+  trigger: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: spacing.xs,
     padding: '6px 10px',
     borderRadius: radii.circle,
     color: colors.textSecondary,
-    textDecoration: 'none',
     fontSize: typography.sizeSm,
     fontWeight: typography.weightMedium,
+    whiteSpace: 'nowrap',
     transition: `color ${motion.base} ${motion.easeOut}, background-color ${motion.base} ${motion.easeOut}`,
     ':hover': {
       color: colors.textPrimary,
@@ -39,6 +49,14 @@ const styles = stylex.create({
   },
   icon: {
     display: 'flex',
+  },
+  label: {
+    fontSize: typography.sizeBase,
+    fontWeight: typography.weightMedium,
+    lineHeight: typography.leadingSnug,
+    '@media (max-width: 560px)': {
+      display: 'none',
+    },
   },
   badge: {
     display: 'inline-flex',
@@ -53,23 +71,34 @@ const styles = stylex.create({
     fontSize: typography.sizeXs,
     fontWeight: typography.weightBold,
   },
+  badgeBump: {
+    animationName: badgePop,
+    animationDuration: motion.base,
+    animationTimingFunction: motion.easeOut,
+    animationIterationCount: 1,
+  },
 })
 </script>
 
 <template>
-  <RouterLink
-    to="/cart"
+  <button
+    type="button"
     :aria-label="label"
-    v-bind="stylex.attrs(styles.link, focusRing.visible)"
+    :aria-haspopup="'dialog'"
+    :aria-expanded="cart.isCartOpen"
+    @click="cart.toggleCart"
+    v-bind="stylex.attrs(buttonReset.root, styles.trigger, focusRing.visible)"
   >
     <span v-bind="stylex.attrs(styles.icon)">
       <ShoppingCart :size="18" aria-hidden="true" />
     </span>
+    <span v-bind="stylex.attrs(styles.label)">Cart</span>
     <span
       v-if="cart.count > 0"
-      v-bind="stylex.attrs(styles.badge)"
+      :key="cart.count"
+      v-bind="stylex.attrs(styles.badge, styles.badgeBump, reducedMotion.root)"
       aria-live="polite"
       >{{ cart.count }}</span
     >
-  </RouterLink>
+  </button>
 </template>

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import * as stylex from '@stylexjs/stylex'
 import AppButton from '@vue-application-architecture/design-system/ui/atoms/AppButton.vue'
+import SectionHeading from '@vue-application-architecture/design-system/ui/atoms/SectionHeading.vue'
 import EmptyState from '@vue-application-architecture/design-system/ui/molecules/EmptyState.vue'
+import PageSection from '@vue-application-architecture/design-system/ui/molecules/PageSection.vue'
 import CartLine from '../components/CartLine.vue'
 import OrderSummary from '../components/OrderSummary.vue'
 import {
   colors,
-  layout,
   radii,
   spacing,
   typography,
@@ -17,29 +18,12 @@ import { formatPrice } from '../utils/money'
 const cart = useCartStore()
 
 const styles = stylex.create({
-  section: {
-    maxWidth: layout.pageMaxWidth,
-    margin: '0 auto',
-    paddingInline: layout.pageGutter,
-    paddingBlock: spacing.xxl,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: spacing.lg,
-  },
   headingRow: {
     display: 'flex',
     alignItems: 'baseline',
     justifyContent: 'space-between',
     gap: spacing.md,
     flexWrap: 'wrap',
-  },
-  heading: {
-    fontFamily: typography.fontDisplay,
-    fontSize: typography.size3xl,
-    fontWeight: typography.weightBold,
-    letterSpacing: '-0.02em',
-    lineHeight: typography.leadingTight,
-    color: colors.textPrimary,
   },
   resultCount: {
     fontSize: typography.sizeSm,
@@ -71,10 +55,10 @@ const styles = stylex.create({
 </script>
 
 <template>
-  <section v-bind="stylex.attrs(styles.section)" aria-label="Your cart">
+  <PageSection layout="column" label="Your cart">
     <template v-if="cart.lineCount > 0">
       <div v-bind="stylex.attrs(styles.headingRow)">
-        <h1 v-bind="stylex.attrs(styles.heading)">Your Cart</h1>
+        <SectionHeading level="h1">Your Cart</SectionHeading>
         <p v-bind="stylex.attrs(styles.resultCount)" role="status">
           {{ cart.count }}
           {{ cart.count === 1 ? 'book' : 'books' }} ·
@@ -112,5 +96,5 @@ const styles = stylex.create({
     >
       <AppButton :to="{ name: 'explore' }">Explore Books</AppButton>
     </EmptyState>
-  </section>
+  </PageSection>
 </template>

@@ -16,16 +16,16 @@ Open the printed URL (default `http://localhost:5173`).
 
 ## What to try
 
-| Area | What it demonstrates |
-| --- | --- |
-| **Home / Explore** | Catalog grid rendered from deterministic mock data (faker seed `2026`, 24 books, one featured banner). |
-| **Search** | `SearchField`/`SearchBar` (design-system molecules) filtering `filteredBooks` in the `catalog` store. |
-| **Category filters** | Chip row filtering by `BookCategory` from `@vue-application-architecture/types`. |
-| **Book details** | `/books/:id` — lazy-loaded detail page with metadata and an auto-computed **related books** row. |
-| **Favorites** | Heart toggles persisted to `localStorage` (`shelf:favorites`), collected on `/favorites`. |
-| **Theme switching** | `ThemeToggle` atom + preferences store; light/dark StyleX themes applied at the app root and prefs persisted (`shelf:theme`). |
-| **Route transitions** | Loading spinner (`Loader` atom) shown while lazy chunks navigate. |
-| **404 handling** | Unknown URLs render a `NotFoundView`. |
+| Area                  | What it demonstrates                                                                                                          |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Home / Explore**    | Catalog grid rendered from deterministic mock data (faker seed `2026`, 24 books, one featured banner).                        |
+| **Search**            | `SearchField`/`SearchBar` (design-system molecules) filtering `filteredBooks` in the `catalog` store.                         |
+| **Category filters**  | Chip row filtering by `BookCategory` from `@vue-application-architecture/types`.                                              |
+| **Book details**      | `/products/:id` — lazy-loaded detail page with metadata and an auto-computed **related books** row.                           |
+| **Favorites**         | Heart toggles persisted to `localStorage` (`shelf:favorites`), collected in the account's Favorites section.                  |
+| **Theme switching**   | `ThemeToggle` atom + preferences store; light/dark StyleX themes applied at the app root and prefs persisted (`shelf:theme`). |
+| **Route transitions** | Loading spinner (`Loader` atom) shown while lazy chunks navigate.                                                             |
+| **404 handling**      | Unknown URLs render a `NotFoundView`.                                                                                         |
 
 ## Architecture highlights
 

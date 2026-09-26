@@ -45,21 +45,26 @@ const styles = stylex.create({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.xxs,
+    gap: spacing.xs,
   },
   label: {
     fontSize: typography.sizeSm,
     fontWeight: typography.weightMedium,
     color: colors.textPrimary,
+    transition: `color ${motion.base} ${motion.easeOut}`,
+  },
+  labelInvalid: {
+    color: colors.danger,
   },
   input: {
     width: '100%',
-    paddingBlock: '10px',
+    paddingBlock: '11px',
     paddingInline: spacing.sm,
     fontSize: typography.sizeBase,
     fontFamily: typography.fontSans,
     color: colors.textPrimary,
     backgroundColor: colors.surface,
+    caretColor: colors.accent,
     appearance: 'none',
     border: `1px solid ${colors.border}`,
     borderRadius: radii.sm,
@@ -74,14 +79,17 @@ const styles = stylex.create({
     ':focus-visible': {
       outline: 'none',
       borderColor: colors.accent,
-      boxShadow: `0 0 0 3px ${colors.accentSoft}`,
+      boxShadow: `0 0 0 4px ${colors.accentSoft}`,
     },
   },
   inputInvalid: {
     borderColor: colors.danger,
+    ':hover': {
+      borderColor: colors.danger,
+    },
     ':focus-visible': {
       borderColor: colors.danger,
-      boxShadow: `0 0 0 3px ${colors.dangerSoft}`,
+      boxShadow: `0 0 0 4px ${colors.dangerSoft}`,
     },
   },
   inputDisabled: {
@@ -103,7 +111,12 @@ const styles = stylex.create({
 
 <template>
   <div v-bind="stylex.attrs(styles.root)">
-    <label :for="inputId" v-bind="stylex.attrs(styles.label)">
+    <label
+      :for="inputId"
+      v-bind="
+        stylex.attrs(styles.label, props.error ? styles.labelInvalid : false)
+      "
+    >
       {{ props.label }}<span v-if="props.required" aria-hidden="true"> *</span>
     </label>
     <input
@@ -119,7 +132,14 @@ const styles = stylex.create({
       :aria-describedby="
         props.error || props.hint ? `${inputId}-support` : undefined
       "
-      v-bind="stylex.attrs(styles.input, props.error ? styles.inputInvalid : false, props.disabled && styles.inputDisabled, reducedMotion.root)"
+      v-bind="
+        stylex.attrs(
+          styles.input,
+          props.error ? styles.inputInvalid : false,
+          props.disabled && styles.inputDisabled,
+          reducedMotion.root,
+        )
+      "
       @input="onInput"
     />
     <p

@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import * as stylex from '@stylexjs/stylex'
-import { focusRing } from '../../../../../packages/design-system/src/styles/shared.stylex'
-import {
-  colors,
-  radii,
-  spacing,
-  typography,
-} from '../../../../../packages/design-system/src/styles/tokens.stylex'
+import { focusRing } from '../../styles/shared.stylex'
+import { colors, radii, spacing, typography } from '../../styles/tokens.stylex'
+
+const props = withDefaults(
+  defineProps<{
+    targetId?: string
+    label?: string
+  }>(),
+  {
+    targetId: 'main-content',
+    label: 'Skip to content',
+  },
+)
 
 function skipToContent() {
-  document.getElementById('main-content')?.focus()
+  document.getElementById(props.targetId)?.focus()
 }
 
 const styles = stylex.create({
@@ -35,10 +41,10 @@ const styles = stylex.create({
 
 <template>
   <a
-    href="#main-content"
+    :href="`#${props.targetId}`"
     v-bind="stylex.attrs(styles.skipLink, focusRing.visible)"
     @click.prevent="skipToContent"
   >
-    Skip to content
+    {{ props.label }}
   </a>
 </template>

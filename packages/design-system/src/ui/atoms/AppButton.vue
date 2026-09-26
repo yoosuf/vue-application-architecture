@@ -17,6 +17,7 @@ const props = withDefaults(
     size?: 'sm' | 'md' | 'lg'
     type?: 'button' | 'submit' | 'reset'
     disabled?: boolean
+    block?: boolean
     to?: RouteLocationRaw
   }>(),
   {
@@ -24,6 +25,7 @@ const props = withDefaults(
     size: 'md',
     type: 'button',
     disabled: false,
+    block: false,
   },
 )
 
@@ -105,6 +107,9 @@ const styles = stylex.create({
     padding: '12px 24px',
     fontSize: typography.sizeBase,
   },
+  block: {
+    width: '100%',
+  },
 })
 </script>
 
@@ -123,6 +128,7 @@ const styles = stylex.create({
             ? styles.sizeLg
             : styles.sizeMd,
         props.disabled && styles.disabled,
+        props.block && styles.block,
         focusRing.visible,
         reducedMotion.root,
       )
@@ -144,6 +150,7 @@ const styles = stylex.create({
             ? styles.sizeLg
             : styles.sizeMd,
         props.disabled && styles.disabled,
+        props.block && styles.block,
         focusRing.visible,
         reducedMotion.root,
       )

@@ -2,11 +2,12 @@
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppShell from './components/AppShell.vue'
-import SkipLink from './components/SkipLink.vue'
+import SkipLink from '@vue-application-architecture/design-system/ui/atoms/SkipLink.vue'
 import AppHeader from './components/AppHeader.vue'
-import MainContent from './components/MainContent.vue'
+import MainContent from '@vue-application-architecture/design-system/ui/molecules/MainContent.vue'
 import AppFooter from './components/AppFooter.vue'
-import StatusAnnouncer from './components/StatusAnnouncer.vue'
+import StatusAnnouncer from '@vue-application-architecture/design-system/ui/atoms/StatusAnnouncer.vue'
+import { CartDrawer } from '../modules/cart'
 import {
   darkTheme,
   lightTheme,
@@ -54,6 +55,7 @@ watch(
     <AppHeader />
     <MainContent :loading="isNavigating" />
     <AppFooter />
+    <CartDrawer />
     <StatusAnnouncer :message="statusMessage" />
   </AppShell>
 </template>

@@ -11,6 +11,8 @@ export interface Book {
   rating: number
   pages: number
   priceCents: number
+  listPriceCents: number
   coverUrl: string
+  galleryUrls: string[]
   featured: boolean
 }

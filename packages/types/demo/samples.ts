@@ -20,7 +20,14 @@ export const featuredBook: Book = {
   rating: 4.8,
   pages: 384,
   priceCents: 2400,
+  listPriceCents: 2799,
   coverUrl: 'https://picsum.photos/seed/silent-algorithm/400/600',
+  galleryUrls: [
+    'https://picsum.photos/seed/silent-algorithm/400/600',
+    'https://picsum.photos/seed/silent-algorithm-back/400/600',
+    'https://picsum.photos/seed/silent-algorithm-detail/400/600',
+    'https://picsum.photos/seed/silent-algorithm-reading/400/600',
+  ],
   featured: true,
 }
 
@@ -36,7 +43,14 @@ export const sampleBooks: Book[] = [
     rating: 4.4,
     pages: 272,
     priceCents: 1995,
+    listPriceCents: 2499,
     coverUrl: 'https://picsum.photos/seed/clear-thinking/400/600',
+    galleryUrls: [
+      'https://picsum.photos/seed/clear-thinking/400/600',
+      'https://picsum.photos/seed/clear-thinking-back/400/600',
+      'https://picsum.photos/seed/clear-thinking-detail/400/600',
+      'https://picsum.photos/seed/clear-thinking-reading/400/600',
+    ],
     featured: false,
   },
   {
@@ -50,7 +64,14 @@ export const sampleBooks: Book[] = [
     rating: 4.2,
     pages: 368,
     priceCents: 2195,
+    listPriceCents: 2699,
     coverUrl: 'https://picsum.photos/seed/design-everyday/400/600',
+    galleryUrls: [
+      'https://picsum.photos/seed/design-everyday/400/600',
+      'https://picsum.photos/seed/design-everyday-back/400/600',
+      'https://picsum.photos/seed/design-everyday-detail/400/600',
+      'https://picsum.photos/seed/design-everyday-reading/400/600',
+    ],
     featured: false,
   },
   {
@@ -64,7 +85,14 @@ export const sampleBooks: Book[] = [
     rating: 4.6,
     pages: 512,
     priceCents: 3195,
+    listPriceCents: 3699,
     coverUrl: 'https://picsum.photos/seed/sapiens/400/600',
+    galleryUrls: [
+      'https://picsum.photos/seed/sapiens/400/600',
+      'https://picsum.photos/seed/sapiens-back/400/600',
+      'https://picsum.photos/seed/sapiens-detail/400/600',
+      'https://picsum.photos/seed/sapiens-reading/400/600',
+    ],
     featured: false,
   },
   {
@@ -78,7 +106,14 @@ export const sampleBooks: Book[] = [
     rating: 4.7,
     pages: 457,
     priceCents: 1895,
+    listPriceCents: 2399,
     coverUrl: 'https://picsum.photos/seed/demon-haunted/400/600',
+    galleryUrls: [
+      'https://picsum.photos/seed/demon-haunted/400/600',
+      'https://picsum.photos/seed/demon-haunted-back/400/600',
+      'https://picsum.photos/seed/demon-haunted-detail/400/600',
+      'https://picsum.photos/seed/demon-haunted-reading/400/600',
+    ],
     featured: false,
   },
   {
@@ -92,7 +127,14 @@ export const sampleBooks: Book[] = [
     rating: 4.3,
     pages: 656,
     priceCents: 2695,
+    listPriceCents: 3299,
     coverUrl: 'https://picsum.photos/seed/steve-jobs/400/600',
+    galleryUrls: [
+      'https://picsum.photos/seed/steve-jobs/400/600',
+      'https://picsum.photos/seed/steve-jobs-back/400/600',
+      'https://picsum.photos/seed/steve-jobs-detail/400/600',
+      'https://picsum.photos/seed/steve-jobs-reading/400/600',
+    ],
     featured: false,
   },
 ]

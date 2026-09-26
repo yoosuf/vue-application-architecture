@@ -1,21 +1,65 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import * as stylex from '@stylexjs/stylex'
+import { ChevronRight, Menu } from 'lucide-vue-next'
 import AppLogo from './AppLogo.vue'
-import NavigationLink from './NavigationLink.vue'
+import Drawer from '@vue-application-architecture/design-system/ui/molecules/Drawer.vue'
+import IconButton from '@vue-application-architecture/design-system/ui/atoms/IconButton.vue'
 import ThemeToggle from '@vue-application-architecture/design-system/ui/atoms/ThemeToggle.vue'
 import SearchBar from '@vue-application-architecture/design-system/ui/molecules/SearchBar.vue'
-import { useCatalogStore } from '../../modules/catalog'
-import { usePreferencesStore } from '../../modules/core'
-import { CartLink } from '../../modules/cart'
+import {
+  focusRing,
+  reducedMotion,
+} from '../../../../../packages/design-system/src/styles/shared.stylex'
 import {
   colors,
   layout,
   motion,
+  radii,
   spacing,
+  typography,
 } from '../../../../../packages/design-system/src/styles/tokens.stylex'
+import { useCatalogStore } from '../../modules/catalog'
+import { usePreferencesStore } from '../../modules/core'
+import { CartLink } from '../../modules/cart'
+import { useCustomerStore } from '../../modules/customer'
 
 const catalog = useCatalogStore()
 const preferences = usePreferencesStore()
+const customer = useCustomerStore()
+const route = useRoute()
+
+const menuOpen = ref(false)
+
+const menuItems = computed(() =>
+  customer.isSignedIn
+    ? [
+        {
+          label: 'Explore',
+          to: { name: 'explore' },
+          active: route.name === 'explore',
+        },
+        {
+          label: 'Account',
+          to: { name: 'account-orders' },
+          active:
+            typeof route.name === 'string' && route.name.startsWith('account'),
+        },
+      ]
+    : [
+        {
+          label: 'Explore',
+          to: { name: 'explore' },
+          active: route.name === 'explore',
+        },
+        {
+          label: 'Log in',
+          to: { name: 'login' },
+          active: route.name === 'login',
+        },
+      ],
+)
 
 const styles = stylex.create({
   wrapper: {
@@ -25,7 +69,7 @@ const styles = stylex.create({
     backgroundColor: colors.background,
     borderBottom: `1px solid ${colors.border}`,
   },
-  header: {
+  topRow: {
     display: 'flex',
     alignItems: 'center',
     gap: spacing.md,
@@ -36,50 +80,111 @@ const styles = stylex.create({
   },
   logoLink: {
     display: 'inline-flex',
+    flexGrow: 0,
     textDecoration: 'none',
-    marginRight: spacing.xs,
     transition: `opacity ${motion.fast} ${motion.easeOut}`,
     ':hover': {
       opacity: 0.75,
     },
   },
-  nav: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: spacing.xxs,
-  },
-  brand: {
-    display: 'flex',
-    alignItems: 'center',
-    flexGrow: 0,
-  },
   search: {
     flex: 1,
-    maxWidth: '320px',
+    minWidth: 0,
+    maxWidth: 640,
     marginInlineStart: 'auto',
+    '@media (max-width: 900px)': {
+      maxWidth: 320,
+    },
     '@media (max-width: 760px)': {
       display: 'none',
     },
+  },
+  actions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: spacing.xs,
+    flexGrow: 0,
+    marginInlineStart: 'auto',
+  },
+  divider: {
+    width: 1,
+    height: 20,
+    marginInline: spacing.xs,
+    backgroundColor: colors.border,
+    '@media (max-width: 760px)': {
+      display: 'none',
+    },
+  },
+  menuBody: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: spacing.lg,
+  },
+  menuSearch: {
+    '@media (min-width: 761px)': {
+      display: 'none',
+    },
+  },
+  menuGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: spacing.xxs,
+  },
+  menuLink: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: `${spacing.sm} ${spacing.md}`,
+    borderRadius: radii.md,
+    color: colors.textPrimary,
+    fontSize: typography.sizeBase,
+    fontWeight: typography.weightMedium,
+    textDecoration: 'none',
+    transition: `color ${motion.base} ${motion.easeOut}, background-color ${motion.base} ${motion.easeOut}`,
+    ':hover': {
+      color: colors.accent,
+      backgroundColor: colors.accentSoft,
+    },
+  },
+  menuLinkActive: {
+    color: colors.accent,
+    backgroundColor: colors.accentSoft,
+    ':hover': {
+      color: colors.accent,
+      backgroundColor: colors.accentSoft,
+    },
+  },
+  menuLinkChevron: {
+    display: 'flex',
+    color: colors.textSecondary,
+  },
+  themeRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+    '@media (min-width: 761px)': {
+      display: 'none',
+    },
+  },
+  themeLabel: {
+    fontSize: typography.sizeBase,
+    fontWeight: typography.weightMedium,
+    color: colors.textPrimary,
   },
 })
 </script>
 
 <template>
   <header v-bind="stylex.attrs(styles.wrapper)">
-    <div v-bind="stylex.attrs(styles.header)">
+    <div v-bind="stylex.attrs(styles.topRow)">
       <RouterLink
         to="/"
-        v-bind="stylex.attrs(styles.brand, styles.logoLink)"
+        v-bind="stylex.attrs(styles.logoLink)"
         aria-label="Shelf home"
       >
         <AppLogo />
       </RouterLink>
-
-      <nav v-bind="stylex.attrs(styles.nav)" aria-label="Primary">
-        <NavigationLink :to="{ name: 'explore' }" label="Explore" />
-        <NavigationLink :to="{ name: 'favorites' }" label="Favorites" />
-        <CartLink />
-      </nav>
 
       <div v-bind="stylex.attrs(styles.search)">
         <SearchBar
@@ -89,10 +194,69 @@ const styles = stylex.create({
         />
       </div>
 
-      <ThemeToggle
-        :theme="preferences.theme"
-        @toggle="preferences.toggleTheme"
-      />
+      <div v-bind="stylex.attrs(styles.actions)">
+        <ThemeToggle
+          :theme="preferences.theme"
+          @toggle="preferences.toggleTheme"
+        />
+        <span v-bind="stylex.attrs(styles.divider)" aria-hidden="true" />
+        <CartLink />
+        <IconButton
+          label="Open menu"
+          :aria-expanded="menuOpen"
+          aria-haspopup="dialog"
+          @click="menuOpen = !menuOpen"
+        >
+          <Menu :size="20" aria-hidden="true" />
+        </IconButton>
+      </div>
     </div>
+
+    <Drawer :open="menuOpen" title="Menu" @close="menuOpen = false">
+      <div v-bind="stylex.attrs(styles.menuBody)">
+        <div v-bind="stylex.attrs(styles.menuSearch)">
+          <SearchBar
+            :model-value="catalog.searchQuery"
+            placeholder="Search books"
+            @update:model-value="catalog.setSearchQuery"
+          />
+        </div>
+
+        <div v-bind="stylex.attrs(styles.menuGroup)">
+          <RouterLink
+            v-for="item in menuItems"
+            :key="item.label"
+            :to="item.to"
+            v-bind="
+              stylex.attrs(
+                styles.menuLink,
+                item.active && styles.menuLinkActive,
+                focusRing.visible,
+                reducedMotion.root,
+              )
+            "
+            @click="menuOpen = false"
+          >
+            {{ item.label }}
+            <span
+              v-bind="stylex.attrs(styles.menuLinkChevron)"
+              aria-hidden="true"
+            >
+              <ChevronRight :size="18" />
+            </span>
+          </RouterLink>
+        </div>
+      </div>
+
+      <template #footer>
+        <div v-bind="stylex.attrs(styles.themeRow)">
+          <span v-bind="stylex.attrs(styles.themeLabel)">Theme</span>
+          <ThemeToggle
+            :theme="preferences.theme"
+            @toggle="preferences.toggleTheme"
+          />
+        </div>
+      </template>
+    </Drawer>
   </header>
 </template>

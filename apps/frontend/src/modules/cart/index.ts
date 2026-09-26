@@ -12,6 +12,7 @@ export {
 
 export { cartRoutes } from './route'
 export { default as AddToCartButton } from './components/AddToCartButton.vue'
+export { default as CartDrawer } from './components/CartDrawer.vue'
 export { default as CartLink } from './components/CartLink.vue'
 export { default as CartLineRow } from './components/CartLine.vue'
 export { default as OrderSummary } from './components/OrderSummary.vue'

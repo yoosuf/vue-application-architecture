@@ -1,7 +1,10 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useCatalogStore } from '../../catalog'
-import { FLAT_SHIPPING_CENTS, SHIPPING_FREE_THRESHOLD_CENTS } from '../utils/money'
+import {
+  FLAT_SHIPPING_CENTS,
+  SHIPPING_FREE_THRESHOLD_CENTS,
+} from '../utils/money'
 import type { Book } from '@vue-application-architecture/types/book'
 
 export interface CartItem {
@@ -47,6 +50,7 @@ export const useCartStore = defineStore('cart', () => {
   const catalog = useCatalogStore()
 
   const items = ref<CartItem[]>(readStoredItems())
+  const isCartOpen = ref(false)
 
   const entries = computed<CartLine[]>(() =>
     items.value.flatMap((item) => {
@@ -84,16 +88,11 @@ export const useCartStore = defineStore('cart', () => {
     return FLAT_SHIPPING_CENTS
   })
 
-  const totalCents = computed(
-    () => subtotalCents.value + shippingCents.value,
-  )
+  const totalCents = computed(() => subtotalCents.value + shippingCents.value)
 
   function persist() {
     try {
-      window.localStorage.setItem(
-        CART_STORAGE_KEY,
-        JSON.stringify(items.value),
-      )
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items.value))
     } catch {
       // Storage may be unavailable (private mode, quota). Best effort only.
     }
@@ -139,8 +138,21 @@ export const useCartStore = defineStore('cart', () => {
     persist()
   }
 
+  function openCart() {
+    isCartOpen.value = true
+  }
+
+  function closeCart() {
+    isCartOpen.value = false
+  }
+
+  function toggleCart() {
+    isCartOpen.value = !isCartOpen.value
+  }
+
   return {
     items,
+    isCartOpen,
     entries,
     lineCount,
     count,
@@ -153,5 +165,8 @@ export const useCartStore = defineStore('cart', () => {
     setQuantity,
     removeBook,
     clear,
+    openCart,
+    closeCart,
+    toggleCart,
   }
 })

@@ -15,12 +15,24 @@ src/
   app/                    # composition root (shell, header, router/appRoutes)
   modules/
     core/                 # NotFoundView + preferences store (Theme comes from design-system)
-    catalog/              # store, mocks, BookCard/Grid/Cover/Meta/Details, CategoryChip/Filter,
-                          #   FeaturedBook, ExploreView + BookDetailsView (route.ts holds both routes)
-    favorites/            # store, FavoriteButton, FavoritesView
+    catalog/              # store, mocks, BookCard/Grid/Cover/Meta/Details, CategoryFilter
+                          #   (composes design-system Chip + FilterGroup), FeaturedBook,
+                          #   ExploreView + BookDetailsView (route.ts holds both routes)
+    favorites/            # store + FavoriteButton (no page/route — favorites live in
+                          #   the account's Favorites section)
     cart/                 # store (shelf:cart), money util, AddToCartButton/CartLink/CartLine/
                           #   OrderSummary, CartView  -> see .opencode/skill/bookstore
     checkout/             # store + CheckoutView (order placement) -> see .opencode/skill/bookstore
+    customer/             # magic-link auth + account: single email field login/signup,
+                          #   LoginView (/login) + check-your-email with demo magic link,
+                          #   LoginVerifyView (/login/verify?token=), account section
+                          #   routes under /account — /account/orders (base /account
+                          #   redirects here), /account/profile, /account/favorites,
+                          #   /account/settings, /account/addresses — each guarded by
+                          #   requireSignedIn, all rendering the one AccountView whose
+                          #   section is derived from the route name; the Favorites
+                          #   section reuses BookGrid + FavoriteButton + AddToCartButton
+                          #   from the global favorites store; order history + sign out
 ```
 
 Each module exposes a public facade `index.ts` and a lazy `route.ts`
@@ -42,6 +54,20 @@ never its internals.
   cents. See the bookstore skill for money/shipping rules.
 - `checkout` (`useCheckoutStore`): `lastOrder` + `placeOrder` (snapshot +
   clear the cart).
+- `customer` (`useCustomerStore`): magic-link auth, no passwords. Registered
+  customers persisted to `shelf:customers`, session to `shelf:customer-session`,
+  pending magic link to `shelf:magic-login` (15-min expiry). `requestMagicLink`
+  (client-only; `LoginView` shows a demo "Open the magic link" button) →
+  `verifyMagicLink(token)` creates the account on first sign-in. `recordOrder`
+  appends placed orders onto the signed-in customer for the `/account` history.
+  Address book: `addAddress`/`updateAddress`/`removeAddress` + role setters
+  `setPrimaryAddress`/`setShippingAddress`/`setBillingAddress`; the first saved
+  address auto-becomes primary/shipping/billing, and roles are cleared when
+  their address is removed. Account tab also supports `changeEmail` (validates
+  format, uniqueness across customers) and `updateNotificationPrefs`
+  (notifications: orderUpdates/recommendations/newsAndDeals, driven by the DS
+  `Toggle` atom). `shelf:customers` records may lack these fields —
+  `normalizeCustomer` fills defaults on read.
 
 ## Testing conventions
 
@@ -53,8 +79,8 @@ never its internals.
 - Mock data is deterministic (faker seed 2026, 24 books, one featured; books
   have `priceCents`).
 - Category/feature additions may require updating the `modular/boundaries`
-  rule in `eslint.config.ts` (module detection is path-based; FEATURE_MODULES
-  currently = catalog, favorites, cart, checkout).
+rule in `eslint.config.ts` (module detection is path-based; FEATURE_MODULES
+ currently = catalog, favorites, cart, checkout, customer).
 
 ## Commands
 

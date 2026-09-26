@@ -28,10 +28,11 @@ src/
     global.css            # reset + token variables (imports tokens.css)
     shared.stylex.ts      # shared styles: focusRing, reducedMotion, visuallyHidden
   ui/
-    atoms/                # AppButton, IconButton, Loader, Rating,
-                          # SearchField, ThemeToggle
-    molecules/            # EmptyState, SearchBar
-tests/                    # per-component Vitest specs (31 tests)
+    atoms/                # AppButton, Chip, IconButton, Loader, NativeSelect, NavLink,
+                          # QuantityStepper, Rating, SearchField, SectionHeading,
+                          # SkipLink, StatusAnnouncer, TextButton, TextField, ThemeToggle
+    molecules/            # Breadcrumbs, Drawer, EmptyState, FilterGroup, FormSection, MainContent, PageSection, ResponsiveGrid, SearchBar, Tabs
+tests/                    # per-component Vitest specs
 vitest.config.ts
 ```
 
@@ -44,7 +45,10 @@ Use whichever face fits the consumer.
 
 ```ts
 import * as stylex from '@stylexjs/stylex'
-import { colors, spacing } from '@vue-application-architecture/design-system/styles/tokens.stylex'
+import {
+  colors,
+  spacing,
+} from '@vue-application-architecture/design-system/styles/tokens.stylex'
 
 const styles = stylex.create({
   root: { color: colors.accent, padding: spacing.md },
@@ -112,21 +116,39 @@ drift.
 All components are **presentational**: data in as props, actions out as events.
 No component imports a store or a router instance.
 
-| Export                    | Description                                                                                                                   |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `ui/atoms/AppButton`      | Button or `RouterLink`-based (`to`), variants `primary`/`secondary`, sizes `sm`/`md`/`lg`, `type`, `disabled`. Emits `click`. |
-| `ui/atoms/IconButton`     | Round icon button: required `label` (aria), `pressed`, `disabled`. Emits `click`.                                             |
-| `ui/atoms/Loader`         | Spinner with a `role="status"` group; `size` (px) and hidden `label`. Reduced-motion aware.                                   |
-| `ui/atoms/Rating`         | Star + numeric rating; accepts `value`, announces `Rated X out of 5`.                                                         |
-| `ui/atoms/SearchField`    | `v-model:modelValue` search input, icon, conditional clear button, `placeholder`, `ariaLabel`.                                |
-| `ui/atoms/ThemeToggle`    | `theme: Theme` in, `toggle` out; announces the active theme in a live region.                                                 |
-| `ui/molecules/EmptyState` | Centered empty/error panel: `title`, `message`, `headingLevel`, action slot.                                                  |
-| `ui/molecules/SearchBar`  | Convenience wrapper: forwards `modelValue` to `SearchField` with default placeholder `Search…`.                               |
+| Export                        | Description                                                                                                                                                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ui/atoms/AppButton`          | Button or `RouterLink`-based (`to`), variants `primary`/`secondary`, sizes `sm`/`md`/`lg`, `type`, `disabled`. Emits `click`.                                                                                                              |
+| `ui/atoms/Chip`               | Toggleable filter chip: `label`/default slot, `selected` → `aria-pressed`. Emits `select`.                                                                                                                                                 |
+| `ui/atoms/IconButton`         | Round icon button: required `label` (aria), `pressed`, `disabled`. Emits `click`.                                                                                                                                                          |
+| `ui/atoms/Loader`             | Spinner with a `role="status"` group; `size` (px) and hidden `label`. Reduced-motion aware.                                                                                                                                                |
+| `ui/atoms/NativeSelect`       | Styled native `<select>`: `modelValue`, `options: { value, label }[]`, `ariaLabel`, `disabled`, `flex`. Emits `update:modelValue`.                                                                                                         |
+| `ui/atoms/NavLink`            | Router-aware nav anchor (`to`, `label`); `aria-current="page"` on the active route. Redirect-focused.                                                                                                                                      |
+| `ui/atoms/Rating`             | Star + numeric rating; accepts `value`, announces `Rated X out of 5`.                                                                                                                                                                      |
+| `ui/atoms/SearchField`        | `v-model:modelValue` search input, icon, conditional clear button, `placeholder`, `ariaLabel`.                                                                                                                                             |
+| `ui/atoms/SectionHeading`     | Section heading rendered as `h1`/`h2`/`h3` (`level`, default `h2`), `size` `2xl`/`3xl`, `id`, `marginBlockEnd`.                                                                                                                            |
+| `ui/atoms/SkipLink`           | Keyboard skip link (`targetId`, default `main-content`; `label`); moves focus to the target on activation.                                                                                                                                 |
+| `ui/atoms/StatusAnnouncer`    | Visually hidden live region (`role="status"`) that announces `message` to screen readers.                                                                                                                                                  |
+| `ui/atoms/TextButton`         | Quiet text-action button: underline + accent (or `tone="danger"`), `type`, `disabled`. Emits `click`.                                                                                                                                      |
+| `ui/atoms/ThemeToggle`        | `theme: Theme` in, `toggle` out; announces the active theme in a live region.                                                                                                                                                              |
+| `ui/molecules/Drawer`         | Right-side slide-over with scrim: `open`, `title`; emits `close` (X, Escape, scrim click); traps focus, restores focus, locks page scroll. `footer` optional.                                                                              |
+| `ui/molecules/Breadcrumbs`    | Accessible breadcrumb trail (`nav` + `ol`): `items: readonly { label, to? }[]`; items with `to` render as `RouterLink`, trailing item without `to` is current (`aria-current="page"`), chevron separators, `label` for the nav aria-label. |
+| `ui/molecules/EmptyState`     | Centered empty/error panel: `title`, `message`, `headingLevel`, action slot.                                                                                                                                                               |
+| `ui/molecules/FilterGroup`    | `role="group"` wrapper for filter controls: required `label` (aria) + default slot; wraps/aligns children.                                                                                                                                 |
+| `ui/molecules/FormSection`    | Fieldset group with a `legend` title and a card-style body: surface background, border, rounded corners.                                                                                                                                   |
+| `ui/molecules/MainContent`    | App-scaffold `<main id="main-content">` with route loading state (`loading` → `Loader` + `RouterView`).                                                                                                                                    |
+| `ui/molecules/PageSection`    | Page section shell: centered, max-width, `spacing` `xl`/`xxl`/`xxxl`, `layout` `block`/`column`, `label`/`labelledby`.                                                                                                                     |
+| `ui/molecules/ResponsiveGrid` | Responsive CSS grid container (5→4→3→2 columns by breakpoint, optional 1-column collapse below 480px unless `minColumns="2"`); children become cells. `gap` `md`/`lg`, `minColumns` `1`/`2` (default `1`).                                 |
+| `ui/molecules/SearchBar`      | Convenience wrapper: forwards `modelValue` to `SearchField` with default placeholder `Search…`.                                                                                                                                            |
+| `ui/molecules/Tabs`           | Accessible tablist: `labels`, optional `v-model` active index; renders one `role="tabpanel"` via the default scoped slot (`{ index, label, active }`). Arrow/Home/End keys.                                                                |
 
 `index.ts` re-exports everything; deep imports by path are also supported:
 
 ```ts
-import { AppButton, EmptyState } from '@vue-application-architecture/design-system'
+import {
+  AppButton,
+  EmptyState,
+} from '@vue-application-architecture/design-system'
 import { SearchBar } from '@vue-application-architecture/design-system/ui/molecules'
 import type { Theme } from '@vue-application-architecture/design-system/theme'
 ```
@@ -162,7 +184,7 @@ Shared StyleX utilities live in `shared.stylex.ts`:
 ```bash
 pnpm --filter @vue-application-architecture/design-system demo         # standalone Vite playground
 pnpm --filter @vue-application-architecture/design-system demo:build   # production build of the demo
-pnpm --filter @vue-application-architecture/design-system test        # vitest (31 specs)
+pnpm --filter @vue-application-architecture/design-system test        # vitest (21 spec files)
 pnpm --filter @vue-application-architecture/design-system test:watch
 pnpm --filter @vue-application-architecture/design-system typecheck
 pnpm --filter @vue-application-architecture/design-system lint

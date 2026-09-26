@@ -128,4 +128,49 @@ describe('catalog store', () => {
     const catalog = useCatalogStore()
     expect(catalog.relatedBooks('missing-id')).toEqual([])
   })
+
+  it('keeps the featured order by default', () => {
+    const catalog = useCatalogStore()
+    expect(catalog.sortedBooks).toEqual(catalog.filteredBooks)
+  })
+
+  it('sorts by rating when requested', () => {
+    const catalog = useCatalogStore()
+    catalog.setSortOrder('rating')
+
+    const ratings = catalog.sortedBooks.map((book) => book.rating)
+    expect(ratings).toEqual([...ratings].sort((a, b) => b - a))
+  })
+
+  it('sorts by price ascending and descending', () => {
+    const catalog = useCatalogStore()
+    catalog.setSortOrder('price-asc')
+    const ascending = catalog.sortedBooks.map((book) => book.priceCents)
+    expect(ascending).toEqual([...ascending].sort((a, b) => a - b))
+
+    catalog.setSortOrder('price-desc')
+    const descending = catalog.sortedBooks.map((book) => book.priceCents)
+    expect(descending).toEqual([...descending].sort((a, b) => b - a))
+  })
+
+  it('sorts books alphabetically by title', () => {
+    const catalog = useCatalogStore()
+    catalog.setSortOrder('title')
+
+    const titles = catalog.sortedBooks.map((book) => book.title)
+    expect(titles).toEqual([...titles].sort())
+  })
+
+  it('applies sorting after the active filters', () => {
+    const catalog = useCatalogStore()
+    const category = catalog.books[0].category
+    catalog.setCategory(category)
+    catalog.setSortOrder('price-asc')
+
+    expect(
+      catalog.sortedBooks.every((book) => book.category === category),
+    ).toBe(true)
+    const prices = catalog.sortedBooks.map((book) => book.priceCents)
+    expect(prices).toEqual([...prices].sort((a, b) => a - b))
+  })
 })

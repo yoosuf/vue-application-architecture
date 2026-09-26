@@ -57,7 +57,7 @@ const styles = stylex.create({
   },
   input: {
     width: '100%',
-    paddingBlock: '10px',
+    paddingBlock: '11px',
     paddingInline: `${spacing.xl} 44px`,
     fontSize: typography.sizeBase,
     fontFamily: typography.fontSans,

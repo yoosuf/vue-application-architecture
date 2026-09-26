@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as stylex from '@stylexjs/stylex'
-import { computed } from 'vue'
+import { computed, useSlots } from 'vue'
 import BookCover from './BookCover.vue'
 import BookMeta from './BookMeta.vue'
 import Rating from '@vue-application-architecture/design-system/ui/atoms/Rating.vue'
@@ -23,6 +23,9 @@ const props = defineProps<{
   book: Book
 }>()
 
+const slots = useSlots()
+const hasFooter = computed(() => Boolean(slots.footer))
+
 const detailsRoute = computed(() => ({
   name: 'book-details',
   params: { id: props.book.id },
@@ -43,6 +46,10 @@ const styles = stylex.create({
       transform: 'translateY(-4px)',
       boxShadow: shadows.cardHover,
     },
+    '@media (max-width: 480px)': {
+      maxWidth: 240,
+      margin: '0 auto',
+    },
   },
   body: {
     display: 'flex',
@@ -51,14 +58,23 @@ const styles = stylex.create({
   },
   footer: {
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     gap: spacing.xs,
+    marginTop: spacing.xs,
+    paddingTop: spacing.xs,
+    borderTop: `1px solid ${colors.border}`,
   },
-  footerActions: {
+  footerMeta: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: spacing.sm,
+  },
+  footerRow: {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(0, 1fr) auto',
+    gap: spacing.sm,
+    alignItems: 'center',
   },
   price: {
     fontSize: typography.sizeBase,
@@ -80,6 +96,7 @@ const styles = stylex.create({
         :src="book.coverUrl"
         :alt="`Cover of ${book.title} by ${book.author}`"
         :priority="book.featured"
+        zoom-on-hover
       />
     </RouterLink>
 
@@ -92,13 +109,15 @@ const styles = stylex.create({
       />
 
       <div v-bind="stylex.attrs(styles.footer)">
-        <Rating :value="book.rating" />
-        <div v-bind="stylex.attrs(styles.footerActions)">
+        <div v-bind="stylex.attrs(styles.footerMeta)">
+          <Rating :value="book.rating" />
           <span
             v-bind="stylex.attrs(styles.price)"
             :aria-label="`Price ${formatPrice(book.priceCents)}`"
             >{{ formatPrice(book.priceCents) }}</span
           >
+        </div>
+        <div v-if="hasFooter" v-bind="stylex.attrs(styles.footerRow)">
           <slot name="footer" :book="book" />
         </div>
       </div>

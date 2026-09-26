@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { catalogRoutes } from '../../modules/catalog'
-import { favoritesRoutes } from '../../modules/favorites'
 import { cartRoutes } from '../../modules/cart'
 import { checkoutRoutes } from '../../modules/checkout'
+import { customerRoutes } from '../../modules/customer'
 
 const notFoundRoute: RouteRecordRaw = {
   path: '/:pathMatch(.*)*',
@@ -16,9 +16,9 @@ const notFoundRoute: RouteRecordRaw = {
 /** Application-level composition of the feature modules' routes. */
 export const appRoutes: RouteRecordRaw[] = [
   ...catalogRoutes,
-  ...favoritesRoutes,
   ...cartRoutes,
   ...checkoutRoutes,
+  ...customerRoutes,
   notFoundRoute,
 ]
 
@@ -33,7 +33,11 @@ export const router = createRouter({
 })
 
 router.afterEach((to) => {
-  document.title = to.meta.title ? `${String(to.meta.title)} · Shelf` : 'Shelf'
+  const title =
+    to.name === 'collection' && typeof to.params.category === 'string'
+      ? `${to.params.category[0].toUpperCase()}${to.params.category.slice(1)}`
+      : to.meta.title
+  document.title = title ? `${String(title)} · Shelf` : 'Shelf'
 })
 
 export default router

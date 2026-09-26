@@ -6,6 +6,8 @@ import IconButton from '@vue-application-architecture/design-system/ui/atoms/Ico
 import QuantityStepper from '@vue-application-architecture/design-system/ui/atoms/QuantityStepper.vue'
 import {
   colors,
+  motion,
+  radii,
   spacing,
   typography,
 } from '../../../../../../packages/design-system/src/styles/tokens.stylex'
@@ -14,10 +16,16 @@ import { useCartStore } from '../stores/cart.store'
 import { formatPrice } from '../utils/money'
 import type { Book } from '@vue-application-architecture/types/book'
 
-const props = defineProps<{
-  book: Book
-  quantity: number
-}>()
+const props = withDefaults(
+  defineProps<{
+    book: Book
+    quantity: number
+    compact?: boolean
+  }>(),
+  {
+    compact: false,
+  },
+)
 
 const cart = useCartStore()
 
@@ -34,16 +42,37 @@ const detailsRoute = computed(() => ({
 }))
 
 const styles = stylex.create({
-  root: {
+  rootBase: {
+    gap: spacing.md,
+    paddingBlock: spacing.xs,
+    paddingInline: spacing.xs,
+    marginBlock: 2,
+    borderRadius: radii.md,
+    backgroundColor: 'transparent',
+    transition: `background-color ${motion.base} ${motion.easeOut}`,
+    ':hover': {
+      backgroundColor: colors.surfaceHover,
+    },
+  },
+  rootWide: {
     display: 'grid',
     gridTemplateColumns: 'auto minmax(0, 1fr) auto auto auto',
     alignItems: 'center',
-    gap: spacing.md,
-    paddingBlock: spacing.sm,
-    borderBottom: `1px solid ${colors.border}`,
   },
-  cover: {
+  rootCompact: {
+    display: 'grid',
+    gridTemplateColumns: 'auto minmax(0, 1fr) auto auto',
+    gridTemplateRows: 'auto auto',
+    alignItems: 'start',
+    columnGap: spacing.sm,
+    rowGap: spacing.xs,
+  },
+  coverWide: {
     width: 52,
+  },
+  coverCompact: {
+    width: 48,
+    gridRow: '1 / span 2',
   },
   info: {
     display: 'flex',
@@ -81,13 +110,32 @@ const styles = stylex.create({
     color: colors.textPrimary,
     whiteSpace: 'nowrap',
   },
+  controlsRow: {
+    gridColumn: '2 / -1',
+    gridRow: 2,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+  },
 })
 </script>
 
 <template>
-  <div v-bind="stylex.attrs(styles.root)">
+  <div
+    v-bind="
+      stylex.attrs(
+        styles.rootBase,
+        props.compact ? styles.rootCompact : styles.rootWide,
+      )
+    "
+  >
     <RouterLink :to="detailsRoute" :aria-label="`${props.book.title} details`">
-      <div v-bind="stylex.attrs(styles.cover)">
+      <div
+        v-bind="
+          stylex.attrs(props.compact ? styles.coverCompact : styles.coverWide)
+        "
+      >
         <BookCover
           :src="props.book.coverUrl"
           :alt="`Cover of ${props.book.title} by ${props.book.author}`"
@@ -100,23 +148,48 @@ const styles = stylex.create({
         {{ props.book.title }}
       </RouterLink>
       <p v-bind="stylex.attrs(styles.meta)">by {{ props.book.author }}</p>
-      <p v-bind="stylex.attrs(styles.unitPrice)">
+      <p v-if="!props.compact" v-bind="stylex.attrs(styles.unitPrice)">
         {{ formatPrice(props.book.priceCents) }} each
       </p>
     </div>
 
-    <QuantityStepper
-      v-model="quantity"
-      :label="`Quantity of ${props.book.title}`"
-    />
+    <template v-if="props.compact">
+      <p v-bind="stylex.attrs(styles.lineTotal)">
+        {{ formatPrice(lineTotal) }}
+      </p>
+      <IconButton
+        :label="`Remove ${props.book.title} from cart`"
+        @click="cart.removeBook(props.book.id)"
+      >
+        <Trash2 :size="18" aria-hidden="true" />
+      </IconButton>
+      <div v-bind="stylex.attrs(styles.controlsRow)">
+        <QuantityStepper
+          v-model="quantity"
+          :label="`Quantity of ${props.book.title}`"
+        />
+        <p v-bind="stylex.attrs(styles.unitPrice)">
+          {{ formatPrice(props.book.priceCents) }} each
+        </p>
+      </div>
+    </template>
 
-    <p v-bind="stylex.attrs(styles.lineTotal)">{{ formatPrice(lineTotal) }}</p>
+    <template v-else>
+      <QuantityStepper
+        v-model="quantity"
+        :label="`Quantity of ${props.book.title}`"
+      />
 
-    <IconButton
-      :label="`Remove ${props.book.title} from cart`"
-      @click="cart.removeBook(props.book.id)"
-    >
-      <Trash2 :size="18" aria-hidden="true" />
-    </IconButton>
+      <p v-bind="stylex.attrs(styles.lineTotal)">
+        {{ formatPrice(lineTotal) }}
+      </p>
+
+      <IconButton
+        :label="`Remove ${props.book.title} from cart`"
+        @click="cart.removeBook(props.book.id)"
+      >
+        <Trash2 :size="18" aria-hidden="true" />
+      </IconButton>
+    </template>
   </div>
 </template>

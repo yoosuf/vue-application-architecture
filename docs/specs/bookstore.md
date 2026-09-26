@@ -35,11 +35,12 @@ are new sibling feature modules in the modular monolith.
 
 | Route       | Module   | Name        | Title         | Notes                              |
 | ----------- | -------- | ----------- | ------------- | ---------------------------------- |
-| `/`         | catalog  | `explore`   | Explore       | cards now show price + add-to-cart |
-| `/books/:id`| catalog  | `book-details` | Book Details | price + quantity stepper           |
+| `/`         | catalog  | `explore`   | Explore         | cards now show price + add-to-cart |
+| `/collections/:category` | catalog | `collection` | e.g. History | category-selected catalog, slug URL |
+| `/products/:id`| catalog| `book-details` | Book Details | price + quantity stepper           |
 | `/cart`     | cart     | `cart`      | Your Cart     | line items, summary, checkout CTA  |
 | `/checkout` | checkout | `checkout`  | Checkout      | form + summary, or confirmation    |
-| `/favorites`| favorites| `favorites` | Favorites     | grid also exposes add-to-cart      |
+| `/account/favorites` | customer | `account-favorites` | Your Favorites | account section reusing the favorites grid |
 
 `/checkout` renders three states:
 1. cart has items → checkout form;
@@ -50,10 +51,18 @@ are new sibling feature modules in the modular monolith.
 
 ### `Book` (`packages/types/src/book.ts`)
 
-New field: `priceCents: number` — integer US cents for clean arithmetic.
-Mock factory generates deterministic prices in `$12.00–$42.00`
-(`faker` seeded). The types demo (`packages/types/demo/samples.ts`) carries
-matching literal prices.
+- `priceCents: number` — the sale price, integer US cents for clean arithmetic.
+- `listPriceCents: number` — the compare-at list price used for the struck-through
+  savings display on the book details buy box; always above `priceCents`.
+
+- `coverUrl: string` — the primary cover image (also the first gallery photo).
+- `galleryUrls: string[]` — all product photos shown on the book details gallery
+  (front cover, back cover, detail, reading shot); `galleryUrls[0] === coverUrl`.
+
+Mock factory generates deterministic sale prices in `$12.00–$42.00`
+(`faker` seeded), with `listPriceCents` rounded up to a `$X.99` compare-at
+price `$3.00–$22.00` above the sale price. The types demo
+(`packages/types/demo/samples.ts`) carries matching literal prices.
 
 ### Cart line
 

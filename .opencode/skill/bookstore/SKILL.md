@@ -11,8 +11,11 @@ A Book Apart: priced books, a persistent cart, and a mock checkout. There is
 
 ## Feature modules
 
-- `src/modules/cart/` — `useCartStore` (persisted to `shelf:cart`), money util,
-  `AddToCartButton`, `CartLink` (header badge), `CartLine`, `OrderSummary`,
+- `src/modules/cart/` — `useCartStore` (persisted to `shelf:cart`, plus a
+  non-persisted `isCartOpen` UI flag with `openCart`/`closeCart`/`toggleCart`),
+  money util, `AddToCartButton`, `CartLink` (header button that toggles the
+  drawer), `CartLine` (`compact` variant for the drawer), `OrderSummary`,
+  `CartDrawer` (Shopify-style right slide-over via the DS `Drawer` molecule),
   `CartView`, `cartRoutes`, facade `index.ts`.
 - `src/modules/checkout/` — `useCheckoutStore` (`lastOrder`, `placeOrder`,
   `clearOrder`), `CheckoutView`, `checkoutRoutes`, facade `index.ts`.
@@ -23,9 +26,15 @@ A Book Apart: priced books, a persistent cart, and a mock checkout. There is
 ## Rules to keep intact
 
 - Cart/checkout must import **only facades** of sibling modules
-  (`../../catalog`, `../../cart`) — never `app/` or internals. The
-  `modular/boundaries` rule (FEATURE_MODULES in `eslint.config.ts`) knows
-  `catalog, favorites, cart, checkout`; add new modules there.
+  (`../../catalog`, `../../cart`, `../../customer`) — never `app/` or
+  internals. The `modular/boundaries` rule (FEATURE_MODULES in
+  `eslint.config.ts`) knows `catalog, favorites, cart, checkout, customer`;
+  add new modules there.
+- Cart UX: any "Add to Cart" (e.g. `AddToCartButton`) opens the drawer via
+  `openCart()`; the header `CartLink` button toggles it. The DS `Drawer`
+  molecule handles scrim/Escape/close-button, focus trap + restore, and scroll
+  lock — the cart module only supplies content and CTAs (Checkout → `/checkout`,
+  View Cart → `/cart`), closing the drawer before navigating.
 - Money is integer **cents**. Format with `formatPrice()` from
   `modules/cart/utils/money.ts` (Intl USD) — never float-round currency.
 - Shipping: flat `FLAT_SHIPPING_CENTS = 499`, free at ≥
@@ -44,16 +53,23 @@ A Book Apart: priced books, a persistent cart, and a mock checkout. There is
 2. `checkout.placeOrder(details)` snapshots `cart.entries` + totals, clears the
    cart, stores `lastOrder`.
 3. `CheckoutView` renders the confirmation from `lastOrder` (order id
-   `SHELF-YYYYMMDD-######`, lines, totals, ship-to address).
+   `SHELF-YYYYMMDD-######`, lines, totals, ship-to address) and, when a
+   customer is signed in, calls `customer.recordOrder(order)` so the order
+   appears in the signed-in customer's history on `/account`. The shipping
+   group is prefilled when a signed-in customer has a saved address (the
+   shipping-designated address, falling back to primary; email prefilled from
+   the account).
 
 ## Testing
 
 - Stores: `tests/stores/cart.store.spec.ts`,
   `tests/stores/checkout.store.spec.ts`.
-- Component: `tests/components/AddToCartButton.spec.ts`.
+- Component: `tests/components/AddToCartButton.spec.ts`,
+  `tests/components/CartDrawer.spec.ts` (empty state, lines/totals, Checkout
+  closes + routes).
 - Flows live in `tests/router.spec.ts` (empty cart, line cart, checkout
-  submit → confirmation).
-- DS atoms: `packages/design-system/tests/{TextField,QuantityStepper}.spec.ts`.
+  submit → confirmation, header button opens the drawer).
+- DS atoms/molecules: `packages/design-system/tests/{TextField,QuantityStepper,Drawer}.spec.ts`.
 
 ## Commands
 

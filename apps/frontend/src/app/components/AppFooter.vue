@@ -15,6 +15,8 @@ const styles = stylex.create({
     margin: '0 auto',
     paddingInline: layout.pageGutter,
     paddingBlock: spacing.lg,
+    borderTop: `1px solid ${colors.border}`,
+    marginTop: spacing.xxl,
   },
   text: {
     display: 'flex',

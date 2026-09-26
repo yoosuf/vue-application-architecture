@@ -4,10 +4,13 @@ import { computed } from 'vue'
 import AppButton from '@vue-application-architecture/design-system/ui/atoms/AppButton.vue'
 import BookCover from './BookCover.vue'
 import Rating from '@vue-application-architecture/design-system/ui/atoms/Rating.vue'
+import { AddToCartButton } from '../../cart'
 import { useCatalogStore } from '../stores/catalog.store'
 import {
   colors,
   layout,
+  radii,
+  shadows,
   spacing,
   typography,
 } from '../../../../../../packages/design-system/src/styles/tokens.stylex'
@@ -29,6 +32,18 @@ const styles = stylex.create({
     paddingInline: layout.pageGutter,
     paddingBlockStart: spacing.xxl,
     paddingBlockEnd: spacing.md,
+  },
+  panel: {
+    padding: spacing.xxl,
+    borderRadius: radii.lg,
+    backgroundColor: colors.accentSoft,
+    boxShadow: shadows.card,
+    '@media (max-width: 760px)': {
+      padding: spacing.lg,
+    },
+    '@media (max-width: 480px)': {
+      padding: spacing.md,
+    },
   },
   grid: {
     display: 'grid',
@@ -76,6 +91,9 @@ const styles = stylex.create({
     '@media (max-width: 760px)': {
       fontSize: typography.size3xl,
     },
+    '@media (max-width: 480px)': {
+      fontSize: typography.size2xl,
+    },
   },
   author: {
     fontSize: typography.sizeLg,
@@ -99,6 +117,10 @@ const styles = stylex.create({
     color: colors.textSecondary,
   },
   action: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
     marginTop: spacing.sm,
   },
 })
@@ -110,37 +132,42 @@ const styles = stylex.create({
     v-bind="stylex.attrs(styles.root)"
     aria-labelledby="featured-title"
   >
-    <div v-bind="stylex.attrs(styles.grid)">
-      <div v-bind="stylex.attrs(styles.coverColumn)">
-        <BookCover
-          :src="featured.coverUrl"
-          :alt="`Cover of ${featured.title} by ${featured.author}`"
-          priority
-        />
-      </div>
-
-      <div v-bind="stylex.attrs(styles.copy)">
-        <p v-bind="stylex.attrs(styles.overline)">Featured Book</p>
-
-        <h1 id="featured-title" v-bind="stylex.attrs(styles.title)">
-          {{ featured.title }}
-        </h1>
-
-        <p v-bind="stylex.attrs(styles.author)">{{ featured.author }}</p>
-
-        <div v-bind="stylex.attrs(styles.metaRow)">
-          <span v-bind="stylex.attrs(styles.stat)">
-            {{ featured.category }} · {{ featured.year }}
-          </span>
-          <Rating :value="featured.rating" />
+    <div v-bind="stylex.attrs(styles.panel)">
+      <div v-bind="stylex.attrs(styles.grid)">
+        <div v-bind="stylex.attrs(styles.coverColumn)">
+          <BookCover
+            :src="featured.coverUrl"
+            :alt="`Cover of ${featured.title} by ${featured.author}`"
+            priority
+          />
         </div>
 
-        <p v-bind="stylex.attrs(styles.description)">
-          {{ featured.description }}
-        </p>
+        <div v-bind="stylex.attrs(styles.copy)">
+          <p v-bind="stylex.attrs(styles.overline)">Featured Book</p>
 
-        <div v-bind="stylex.attrs(styles.action)">
-          <AppButton :to="detailsRoute" size="lg">View Book</AppButton>
+          <h1 id="featured-title" v-bind="stylex.attrs(styles.title)">
+            {{ featured.title }}
+          </h1>
+
+          <p v-bind="stylex.attrs(styles.author)">{{ featured.author }}</p>
+
+          <div v-bind="stylex.attrs(styles.metaRow)">
+            <span v-bind="stylex.attrs(styles.stat)">
+              {{ featured.category }} · {{ featured.year }}
+            </span>
+            <Rating :value="featured.rating" />
+          </div>
+
+          <p v-bind="stylex.attrs(styles.description)">
+            {{ featured.description }}
+          </p>
+
+          <div v-bind="stylex.attrs(styles.action)">
+            <AddToCartButton :book="featured" size="lg" persistent />
+            <AppButton :to="detailsRoute" size="lg" variant="secondary">
+              View Book
+            </AppButton>
+          </div>
         </div>
       </div>
     </div>

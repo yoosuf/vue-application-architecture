@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as stylex from '@stylexjs/stylex'
-import Loader from '@vue-application-architecture/design-system/ui/atoms/Loader.vue'
-import { colors } from '../../../../../packages/design-system/src/styles/tokens.stylex'
+import Loader from '../atoms/Loader.vue'
+import { colors } from '../../styles/tokens.stylex'
 
 defineProps<{
   loading?: boolean

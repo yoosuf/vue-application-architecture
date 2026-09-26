@@ -1,5 +1,8 @@
 import { faker } from '@faker-js/faker'
-import type { Book, BookCategory } from '@vue-application-architecture/types/book'
+import type {
+  Book,
+  BookCategory,
+} from '@vue-application-architecture/types/book'
 
 export const CATEGORIES: BookCategory[] = [
   'Fiction',
@@ -12,6 +15,8 @@ export const CATEGORIES: BookCategory[] = [
 
 export function createBook(index = 0): Book {
   const id = faker.string.uuid()
+  const priceCents = faker.number.int({ min: 1200, max: 4200 })
+  const coverUrl = `https://picsum.photos/seed/${id}/400/600`
 
   return {
     id,
@@ -22,8 +27,20 @@ export function createBook(index = 0): Book {
     year: faker.number.int({ min: 1990, max: new Date().getFullYear() }),
     rating: faker.number.float({ min: 3, max: 5, fractionDigits: 1 }),
     pages: faker.number.int({ min: 120, max: 900 }),
-    priceCents: faker.number.int({ min: 1200, max: 4200 }),
-    coverUrl: `https://picsum.photos/seed/${id}/400/600`,
+    priceCents,
+    listPriceCents:
+      Math.floor(
+        (priceCents + faker.number.int({ min: 300, max: 2200 })) / 100,
+      ) *
+        100 +
+      99,
+    coverUrl,
+    galleryUrls: [
+      coverUrl,
+      `https://picsum.photos/seed/${id}-back/400/600`,
+      `https://picsum.photos/seed/${id}-detail/400/600`,
+      `https://picsum.photos/seed/${id}-reading/400/600`,
+    ],
     featured: index === 0,
   }
 }

@@ -1,32 +1,26 @@
 <script setup lang="ts">
-import * as stylex from '@stylexjs/stylex'
-import CategoryChip from './CategoryChip.vue'
-import { useCatalogStore } from '../stores/catalog.store'
-import { spacing } from '../../../../../../packages/design-system/src/styles/tokens.stylex'
+import FilterGroup from '@vue-application-architecture/design-system/ui/molecules/FilterGroup.vue'
+import Chip from '@vue-application-architecture/design-system/ui/atoms/Chip.vue'
+import type { CategoryFilter } from '../stores/catalog.store'
 
-const catalog = useCatalogStore()
+defineProps<{
+  modelValue: CategoryFilter
+  categories: CategoryFilter[]
+}>()
 
-const styles = stylex.create({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-  },
-})
+const emit = defineEmits<{
+  'update:modelValue': [value: CategoryFilter]
+}>()
 </script>
 
 <template>
-  <div
-    v-bind="stylex.attrs(styles.root)"
-    role="group"
-    aria-label="Filter books by category"
-  >
-    <CategoryChip
-      v-for="category in catalog.categories"
+  <FilterGroup label="Filter books by category">
+    <Chip
+      v-for="category in categories"
       :key="category"
       :label="category"
-      :selected="catalog.selectedCategory === category"
-      @select="catalog.setCategory(category)"
+      :selected="modelValue === category"
+      @select="emit('update:modelValue', category)"
     />
-  </div>
+  </FilterGroup>
 </template>

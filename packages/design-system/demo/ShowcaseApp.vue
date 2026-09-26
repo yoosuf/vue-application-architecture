@@ -11,10 +11,18 @@ import ThemeToggle from '../src/ui/atoms/ThemeToggle.vue'
 import EmptyState from '../src/ui/molecules/EmptyState.vue'
 import SearchBar from '../src/ui/molecules/SearchBar.vue'
 import { darkTheme, lightTheme } from '../src/styles/themes.stylex'
-import { colors, motion, radii, spacing, typography } from '../src/styles/tokens.stylex'
+import {
+  colors,
+  motion,
+  radii,
+  spacing,
+  typography,
+} from '../src/styles/tokens.stylex'
 
 const theme = ref<'light' | 'dark'>('light')
-const themeClass = computed(() => (theme.value === 'dark' ? darkTheme : lightTheme))
+const themeClass = computed(() =>
+  theme.value === 'dark' ? darkTheme : lightTheme,
+)
 const query = ref('')
 
 function toggleTheme() {
@@ -125,7 +133,9 @@ const styles = stylex.create({
 <template>
   <main :class="themeClass" v-bind="stylex.attrs(styles.page)">
     <header v-bind="stylex.attrs(styles.header)">
-      <h1 v-bind="stylex.attrs(styles.title)">@vue-application-architecture/design-system</h1>
+      <h1 v-bind="stylex.attrs(styles.title)">
+        @vue-application-architecture/design-system
+      </h1>
       <ThemeToggle :theme="theme" @toggle="toggleTheme" />
     </header>
 
@@ -134,8 +144,12 @@ const styles = stylex.create({
       <section v-bind="stylex.attrs(styles.card)">
         <p v-bind="stylex.attrs(styles.cardLabel)">AppButton</p>
         <div v-bind="stylex.attrs(styles.row)">
-          <AppButton variant="primary" @click="() => undefined">Primary</AppButton>
-          <AppButton variant="secondary" @click="() => undefined">Secondary</AppButton>
+          <AppButton variant="primary" @click="() => undefined"
+            >Primary</AppButton
+          >
+          <AppButton variant="secondary" @click="() => undefined"
+            >Secondary</AppButton
+          >
           <AppButton variant="primary" size="sm" disabled>Disabled</AppButton>
         </div>
       </section>
@@ -177,7 +191,10 @@ const styles = stylex.create({
 
       <section v-bind="stylex.attrs(styles.card)">
         <p v-bind="stylex.attrs(styles.cardLabel)">EmptyState</p>
-        <EmptyState title="Nothing to show" message="This panel renders the molecule as a card." />
+        <EmptyState
+          title="Nothing to show"
+          message="This panel renders the molecule as a card."
+        />
       </section>
     </div>
 
@@ -189,7 +206,10 @@ const styles = stylex.create({
           :key="swatch.name"
           v-bind="stylex.attrs(styles.swatch)"
         >
-          <span v-bind="stylex.attrs(styles.swatchDot)" :style="{ backgroundColor: swatch.value }" />
+          <span
+            v-bind="stylex.attrs(styles.swatchDot)"
+            :style="{ backgroundColor: swatch.value }"
+          />
           <code>{{ swatch.name }}</code>
         </div>
       </div>
@@ -197,9 +217,10 @@ const styles = stylex.create({
         These swatches read <code>--ds-*</code> variables from
         <code>tokens.css</code> (imported in <code>main.ts</code>), so they flip
         with <code>data-ds-theme</code> exactly like the StyleX themes above.
-        Motion (<code>{{ motion.base }}</code>), radii
-        (<code>{{ radii.md }}</code>) and spacing
-        (<code>{{ spacing.md }}</code>) come from the same files.
+        Motion (<code>{{ motion.base }}</code
+        >), radii (<code>{{ radii.md }}</code
+        >) and spacing (<code>{{ spacing.md }}</code
+        >) come from the same files.
       </p>
     </section>
   </main>
