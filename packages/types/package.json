@@ -1,0 +1,17 @@
+{
+  "name": "@vue-application-architecture/types",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./book": "./src/book.ts",
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc -b --force",
+    "lint": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.ts\""
+  }
+}

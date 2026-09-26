@@ -1,0 +1,44 @@
+<script setup lang="ts">
+import * as stylex from '@stylexjs/stylex'
+import { focusRing } from '../../../../../packages/design-system/src/styles/shared.stylex'
+import {
+  colors,
+  radii,
+  spacing,
+  typography,
+} from '../../../../../packages/design-system/src/styles/tokens.stylex'
+
+function skipToContent() {
+  document.getElementById('main-content')?.focus()
+}
+
+const styles = stylex.create({
+  skipLink: {
+    position: 'fixed',
+    top: spacing.sm,
+    left: spacing.sm,
+    zIndex: 20,
+    padding: '8px 16px',
+    borderRadius: radii.sm,
+    backgroundColor: colors.accent,
+    color: colors.textOnAccent,
+    fontSize: typography.sizeSm,
+    fontWeight: typography.weightMedium,
+    textDecoration: 'none',
+    transform: 'translateY(-200%)',
+    ':focus-visible': {
+      transform: 'translateY(0)',
+    },
+  },
+})
+</script>
+
+<template>
+  <a
+    href="#main-content"
+    v-bind="stylex.attrs(styles.skipLink, focusRing.visible)"
+    @click.prevent="skipToContent"
+  >
+    Skip to content
+  </a>
+</template>
