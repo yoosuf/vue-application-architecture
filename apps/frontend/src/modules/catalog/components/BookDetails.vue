@@ -5,6 +5,7 @@ import AppButton from '@vue-application-architecture/design-system/ui/atoms/AppB
 import BookCover from './BookCover.vue'
 import Rating from '@vue-application-architecture/design-system/ui/atoms/Rating.vue'
 import { FavoriteButton } from '../../favorites'
+import { AddToCartButton, formatPrice } from '../../cart'
 import { focusRing } from '../../../../../../packages/design-system/src/styles/shared.stylex'
 import {
   colors,
@@ -89,6 +90,12 @@ const styles = stylex.create({
     lineHeight: typography.leadingNormal,
     color: colors.textSecondary,
   },
+  price: {
+    fontSize: typography.size2xl,
+    fontWeight: typography.weightBold,
+    lineHeight: typography.leadingTight,
+    color: colors.textPrimary,
+  },
   actions: {
     display: 'flex',
     alignItems: 'center',
@@ -144,9 +151,12 @@ const styles = stylex.create({
 
       <p v-bind="stylex.attrs(styles.description)">{{ book.description }}</p>
 
+      <p v-bind="stylex.attrs(styles.price)">{{ formatPrice(book.priceCents) }}</p>
+
       <div v-bind="stylex.attrs(styles.actions)">
+        <AddToCartButton :book="book" size="lg" />
         <FavoriteButton :book="book" />
-        <AppButton variant="primary" size="lg" :to="{ name: 'explore' }">
+        <AppButton variant="secondary" size="md" :to="{ name: 'explore' }">
           Explore More Books
         </AppButton>
       </div>

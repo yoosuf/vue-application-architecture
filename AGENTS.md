@@ -42,13 +42,18 @@ After finishing a task, run `pnpm lint`, `pnpm typecheck`, `pnpm test` (and
 
 ## Architecture and import rules
 
-The app is a modular monolith: feature modules (`catalog`, `favorites`) depend on `@vue-application-architecture/design-system`, on `@vue-application-architecture/types`,
+The app is a modular monolith: feature modules (`catalog`, `favorites`, `cart`,
+`checkout`) depend on `@vue-application-architecture/design-system`, on `@vue-application-architecture/types`,
 and on sibling modules — including the `core` module — **only through their
 public `index.ts` facade**. `catalog/` owns Shelf-specific book presentation (`BookCard`/`BookGrid`/
 `BookCover`/`BookMeta`). `core/` owns the `NotFoundView` and preferences store. `app/` is the composition root. Rules are enforced by a custom
 ESLint rule (`modular/boundaries` in `apps/frontend/eslint.config.ts`) and the
 design-system package is self-contained (`ds/self-contained` in its eslint
 config).
+
+Product specs live in `docs/specs/` (see `docs/specs/bookstore.md` for the
+cart/checkout feature), and cart/checkout conventions are codified in the
+`.opencode/skill/bookstore` skill.
 
 - Feature modules must never import from `app/` or a sibling module's
   internals.
@@ -91,11 +96,14 @@ config).
   endpoint). Never change the registry; reinstalls must go through npmjs.
 - Do not add comments to code unless asked.
 - Stores: `catalog` (books, `filteredBooks`, `featuredBook`, search/category
-  setters), `favorites` (heart toggles), `preferences` (theme). Persisted to
-  `localStorage` keys `shelf:favorites` and `shelf:theme`.
+  setters), `favorites` (heart toggles), `preferences` (theme), `cart`
+  (items + totals, integer cents), `checkout` (order placement). Persisted to
+  `localStorage` keys `shelf:favorites`, `shelf:theme`, and `shelf:cart`;
+  `checkout.lastOrder` is in-memory only.
+- Mock catalog data is deterministic (faker seed 2026, 24 books, one featured;
+  each book carries `priceCents`).
 - The design system keeps its defaults domain-neutral (e.g. the search
   placeholder is `Search…`); Shelf passes its own copy to `SearchBar`.
-- Mock catalog data is deterministic (faker seed 2026, 24 books, one featured).
 - vue-router 5: `router.isReady()` resolves only after the app is mounted; in
   tests, mount before awaiting `isReady()` and `await router.push()` before
   asserting (lazy components load async).

@@ -14,6 +14,8 @@ export const colors = stylex.defineVars({
   borderStrong: '#c9c6bb',
   favorite: '#b7472f',
   favoriteSoft: '#f6e5e0',
+  danger: '#a93226',
+  dangerSoft: '#f7e4e0',
   shadow: 'rgba(25, 25, 23, 0.12)',
   overlay: 'rgba(25, 25, 23, 0.55)',
 })

@@ -15,6 +15,8 @@ export const lightTheme = stylex.createTheme(colors, {
   borderStrong: '#c9c6bb',
   favorite: '#b7472f',
   favoriteSoft: '#f6e5e0',
+  danger: '#a93226',
+  dangerSoft: '#f7e4e0',
   shadow: 'rgba(25, 25, 23, 0.12)',
   overlay: 'rgba(25, 25, 23, 0.55)',
 })
@@ -33,6 +35,8 @@ export const darkTheme = stylex.createTheme(colors, {
   borderStrong: '#45463e',
   favorite: '#e0766a',
   favoriteSoft: '#3a2723',
+  danger: '#e07a6a',
+  dangerSoft: '#3b2622',
   shadow: 'rgba(0, 0, 0, 0.45)',
   overlay: 'rgba(0, 0, 0, 0.6)',
 })

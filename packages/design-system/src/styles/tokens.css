@@ -26,6 +26,8 @@
   --ds-color-border-strong: #c9c6bb;
   --ds-color-favorite: #b7472f;
   --ds-color-favorite-soft: #f6e5e0;
+  --ds-color-danger: #a93226;
+  --ds-color-danger-soft: #f7e4e0;
   --ds-color-shadow: rgba(25, 25, 23, 0.12);
   --ds-color-overlay: rgba(25, 25, 23, 0.55);
 
@@ -100,6 +102,8 @@
   --ds-color-border-strong: #45463e;
   --ds-color-favorite: #e0766a;
   --ds-color-favorite-soft: #3a2723;
+  --ds-color-danger: #e07a6a;
+  --ds-color-danger-soft: #3b2622;
   --ds-color-shadow: rgba(0, 0, 0, 0.45);
   --ds-color-overlay: rgba(0, 0, 0, 0.6);
 }

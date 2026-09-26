@@ -4,15 +4,18 @@ import { computed } from 'vue'
 import BookCover from './BookCover.vue'
 import BookMeta from './BookMeta.vue'
 import Rating from '@vue-application-architecture/design-system/ui/atoms/Rating.vue'
+import { formatPrice } from '../../cart'
 import {
   focusRing,
   reducedMotion,
 } from '../../../../../../packages/design-system/src/styles/shared.stylex'
 import {
+  colors,
   motion,
   radii,
   shadows,
   spacing,
+  typography,
 } from '../../../../../../packages/design-system/src/styles/tokens.stylex'
 import type { Book } from '@vue-application-architecture/types/book'
 
@@ -52,6 +55,17 @@ const styles = stylex.create({
     justifyContent: 'space-between',
     gap: spacing.xs,
   },
+  footerActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  price: {
+    fontSize: typography.sizeBase,
+    fontWeight: typography.weightBold,
+    lineHeight: typography.leadingSnug,
+    color: colors.textPrimary,
+  },
 })
 </script>
 
@@ -79,7 +93,14 @@ const styles = stylex.create({
 
       <div v-bind="stylex.attrs(styles.footer)">
         <Rating :value="book.rating" />
-        <slot name="footer" :book="book" />
+        <div v-bind="stylex.attrs(styles.footerActions)">
+          <span
+            v-bind="stylex.attrs(styles.price)"
+            :aria-label="`Price ${formatPrice(book.priceCents)}`"
+            >{{ formatPrice(book.priceCents) }}</span
+          >
+          <slot name="footer" :book="book" />
+        </div>
       </div>
     </div>
   </article>

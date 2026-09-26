@@ -4,6 +4,7 @@ import { BookGrid } from '../../catalog'
 import EmptyState from '@vue-application-architecture/design-system/ui/molecules/EmptyState.vue'
 import AppButton from '@vue-application-architecture/design-system/ui/atoms/AppButton.vue'
 import FavoriteButton from '../components/FavoriteButton.vue'
+import { AddToCartButton } from '../../cart'
 import { useFavoritesStore } from '../stores/favorites.store'
 import {
   colors,
@@ -60,6 +61,7 @@ const styles = stylex.create({
       <BookGrid :books="favorites.favoriteBooks">
         <template #footer="{ book }">
           <FavoriteButton :book="book" />
+          <AddToCartButton :book="book" />
         </template>
       </BookGrid>
     </template>

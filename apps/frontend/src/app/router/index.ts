@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { catalogRoutes } from '../../modules/catalog'
 import { favoritesRoutes } from '../../modules/favorites'
+import { cartRoutes } from '../../modules/cart'
+import { checkoutRoutes } from '../../modules/checkout'
 
 const notFoundRoute: RouteRecordRaw = {
   path: '/:pathMatch(.*)*',
@@ -15,6 +17,8 @@ const notFoundRoute: RouteRecordRaw = {
 export const appRoutes: RouteRecordRaw[] = [
   ...catalogRoutes,
   ...favoritesRoutes,
+  ...cartRoutes,
+  ...checkoutRoutes,
   notFoundRoute,
 ]
 

@@ -10,6 +10,7 @@ import SearchBar from '@vue-application-architecture/design-system/ui/molecules/
 import EmptyState from '@vue-application-architecture/design-system/ui/molecules/EmptyState.vue'
 import AppButton from '@vue-application-architecture/design-system/ui/atoms/AppButton.vue'
 import { FavoriteButton } from '../../favorites'
+import { AddToCartButton } from '../../cart'
 import {
   colors,
   layout,
@@ -88,6 +89,7 @@ const styles = stylex.create({
       >
         <template #footer="{ book }">
           <FavoriteButton :book="book" />
+          <AddToCartButton :book="book" />
         </template>
       </BookGrid>
 

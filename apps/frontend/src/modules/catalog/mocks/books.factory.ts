@@ -22,6 +22,7 @@ export function createBook(index = 0): Book {
     year: faker.number.int({ min: 1990, max: new Date().getFullYear() }),
     rating: faker.number.float({ min: 3, max: 5, fractionDigits: 1 }),
     pages: faker.number.int({ min: 120, max: 900 }),
+    priceCents: faker.number.int({ min: 1200, max: 4200 }),
     coverUrl: `https://picsum.photos/seed/${id}/400/600`,
     featured: index === 0,
   }

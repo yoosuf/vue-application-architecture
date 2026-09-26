@@ -12,7 +12,7 @@ import {
   vueTsConfigs,
 } from '@vue/eslint-config-typescript'
 
-const FEATURE_MODULES = new Set(['catalog', 'favorites'])
+const FEATURE_MODULES = new Set(['catalog', 'favorites', 'cart', 'checkout'])
 const ALL_MODULES = new Set(['core', ...FEATURE_MODULES])
 
 type ImportExportNode =
@@ -148,7 +148,7 @@ export default defineConfigWithVueTs(
 
   {
     name: 'app/files-to-ignore',
-    ignores: ['**/dist/**', '**/coverage/**'],
+    ignores: ['**/dist/**', '**/dist-demo/**', '**/coverage/**'],
   },
 
   pluginVue.configs['flat/essential'],

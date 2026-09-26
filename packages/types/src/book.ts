@@ -10,6 +10,7 @@ export interface Book {
   year: number
   rating: number
   pages: number
+  priceCents: number
   coverUrl: string
   featured: boolean
 }

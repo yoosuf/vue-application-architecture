@@ -6,6 +6,7 @@ import ThemeToggle from '@vue-application-architecture/design-system/ui/atoms/Th
 import SearchBar from '@vue-application-architecture/design-system/ui/molecules/SearchBar.vue'
 import { useCatalogStore } from '../../modules/catalog'
 import { usePreferencesStore } from '../../modules/core'
+import { CartLink } from '../../modules/cart'
 import {
   colors,
   layout,
@@ -77,6 +78,7 @@ const styles = stylex.create({
       <nav v-bind="stylex.attrs(styles.nav)" aria-label="Primary">
         <NavigationLink :to="{ name: 'explore' }" label="Explore" />
         <NavigationLink :to="{ name: 'favorites' }" label="Favorites" />
+        <CartLink />
       </nav>
 
       <div v-bind="stylex.attrs(styles.search)">
