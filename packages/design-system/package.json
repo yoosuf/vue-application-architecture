@@ -1,0 +1,62 @@
+{
+  "name": "@vue-application-architecture/design-system",
+  "version": "0.1.0",
+  "description": "Shelf's self-contained UI kit: StyleX design tokens, light/dark themes, and domain-free atoms & molecules, with a plain-CSS token layer.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme": "./src/theme.ts",
+    "./styles/global.css": "./src/styles/global.css",
+    "./styles/tokens.css": "./src/styles/tokens.css",
+    "./styles/*": "./src/styles/*",
+    "./ui/atoms": "./src/ui/atoms/index.ts",
+    "./ui/atoms/*": "./src/ui/atoms/*",
+    "./ui/molecules": "./src/ui/molecules/index.ts",
+    "./ui/molecules/*": "./src/ui/molecules/*"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": [
+    "./src/styles/*.css"
+  ],
+  "scripts": {
+    "typecheck": "vue-tsc -b --force",
+    "lint": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{ts,vue,css}\" \"tests/**/*.ts\" \"vitest.config.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "design-system",
+    "ui-kit",
+    "stylex",
+    "vue",
+    "tokens",
+    "shelf"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@stylexjs/stylex": "^0.19.1",
+    "lucide-vue-next": "^0.577.0",
+    "vue-router": "^5.3.1"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.42"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@stylexjs/babel-plugin": "^0.19.1",
+    "@stylexjs/unplugin": "^0.19.1",
+    "@types/node": "^24.13.3",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.5.1",
+    "happy-dom": "^20.14.5",
+    "vitest": "^5.0.1",
+    "vue": "^3.5.42"
+  }
+}
