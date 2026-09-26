@@ -160,6 +160,8 @@ Shared StyleX utilities live in `shared.stylex.ts`:
 ## Commands
 
 ```bash
+pnpm --filter @vue-application-architecture/design-system demo         # standalone Vite playground
+pnpm --filter @vue-application-architecture/design-system demo:build   # production build of the demo
 pnpm --filter @vue-application-architecture/design-system test        # vitest (31 specs)
 pnpm --filter @vue-application-architecture/design-system test:watch
 pnpm --filter @vue-application-architecture/design-system typecheck
@@ -169,3 +171,11 @@ pnpm --filter @vue-application-architecture/design-system format
 
 `pnpm test`, `pnpm typecheck`, and `pnpm lint` at the repo root run every
 package, including this one.
+
+## Demo
+
+`pnpm demo` (or `pnpm demo:ds` from the repo root) boots a self-contained
+playground that renders the whole component catalog — atoms, molecules, both
+theme faces (the StyleX `ThemeToggle` and the `data-ds-theme` CSS token layer),
+and live `--ds-*` swatches. It depends only on this package: no `@vue-application-architecture/types`,
+no app code.

@@ -24,9 +24,11 @@
   "scripts": {
     "typecheck": "vue-tsc -b --force",
     "lint": "eslint . --fix",
-    "format": "prettier --write \"src/**/*.{ts,vue,css}\" \"tests/**/*.ts\" \"vitest.config.ts\"",
+    "format": "prettier --write \"src/**/*.{ts,vue,css}\" \"tests/**/*.ts\" \"demo/**/*.{ts,vue}\" \"config/**/*.ts\" \"vite.config.ts\" \"vitest.config.ts\"",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "demo": "vite",
+    "demo:build": "vite build"
   },
   "keywords": [
     "design-system",
@@ -56,6 +58,7 @@
     "@vitejs/plugin-vue": "^6.0.8",
     "@vue/test-utils": "^2.5.1",
     "happy-dom": "^20.14.5",
+    "vite": "^8.3.0",
     "vitest": "^5.0.1",
     "vue": "^3.5.42"
   }
