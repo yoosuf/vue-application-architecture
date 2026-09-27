@@ -42,6 +42,10 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Verify the Vercel credentials
+        if: env.VERCEL_TOKEN != '' && env.VERCEL_PROJECT_ID != ''
+        run: pnpm dlx vercel@latest whoami --token="$VERCEL_TOKEN"
+
       - name: Publish
         if: env.VERCEL_TOKEN != '' && env.VERCEL_PROJECT_ID != ''
         run: pnpm dlx vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN"

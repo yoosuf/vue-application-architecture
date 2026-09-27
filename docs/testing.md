@@ -113,12 +113,22 @@ gh secret set VERCEL_ORG_ID --repo yoosuf/vue-application-architecture
 gh secret set VERCEL_PROJECT_ID --repo yoosuf/vue-application-architecture
 ```
 
-Deployment itself is configured by the root `vercel.json`, not by the workflow:
-`buildCommand` `pnpm build:deploy` and `outputDirectory` `dist`, plus a
-catch-all rewrite to `index.html` because the router uses `createWebHistory()`
-and every route is lazy. `pnpm build:deploy` is `pnpm build` followed by a
-copy of `apps/frontend/dist` to a root `dist/`, so the deployment works both
-with this file and with a project left on Vercel's default output directory.
-Vercel's own Git integration reads the same file — use either that or the
-deploy workflow, not both. The required dashboard settings are listed in
+Deployment itself is configured by the two `vercel.json` files, not by the
+workflow: `buildCommand` `cd "$(git rev-parse --show-toplevel || pwd)" &&
+pnpm build:deploy`, `outputDirectory` `dist`, plus a catch-all rewrite to
+`index.html` because the router uses `createWebHistory()` and every route is
+lazy. `pnpm build:deploy` builds the app and copies `apps/frontend/dist` to a
+root `dist/`, so the deployment works whichever directory Vercel treats as the
+project root, and it prints the short commit SHA so a log shows what it
+published. Vercel's own Git integration reads the same file — use either that
+or the deploy workflow, not both. The required dashboard settings are listed in
 [`architecture.md`](architecture.md#build-ci-and-deployment).
+
+### Deployment troubleshooting
+
+| Log line                                                              | Cause                                                                                                        | Fix                                                                                                                                                                               |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL Command "build:deploy" not found` | the build command ran in a directory that has no such script, so the project root is not the repository root | use the full `cd "$(git rev-parse --show-toplevel \|\| pwd)" && pnpm build:deploy` command in the dashboard's Build Command field                                                 |
+| `No Output Directory named "dist" found`                              | the dashboard's Output Directory wins over `vercel.json` and does not match the build output                 | set Output Directory to `dist` (repository root) or `dist` (app root), or clear the field so `vercel.json` applies                                                                |
+| `Error: Project not found`                                            | the token cannot see the project named by `VERCEL_ORG_ID`/`VERCEL_PROJECT_ID`                                | the ids and the token must come from the same account: re-run `vercel link` for the project you deploy to, or create the project under the token's team, then update both secrets |
+| a build log with no commit SHA                                        | the deployment was rebuilt from an older commit (Vercel's "Redeploy" reuses the original)                    | trigger a fresh deployment of the current `main`                                                                                                                                  |
