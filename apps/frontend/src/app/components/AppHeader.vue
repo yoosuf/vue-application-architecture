@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import * as stylex from '@stylexjs/stylex'
-import { ChevronRight, Menu } from 'lucide-vue-next'
+import { ChevronRight, Github, Menu } from 'lucide-vue-next'
 import AppLogo from './AppLogo.vue'
 import Drawer from '@vue-application-architecture/design-system/ui/molecules/Drawer.vue'
 import IconButton from '@vue-application-architecture/design-system/ui/atoms/IconButton.vue'
@@ -11,6 +11,7 @@ import SearchBar from '@vue-application-architecture/design-system/ui/molecules/
 import {
   focusRing,
   reducedMotion,
+  visuallyHidden,
 } from '../../../../../packages/design-system/src/styles/shared.stylex'
 import {
   colors,
@@ -31,6 +32,8 @@ const customer = useCustomerStore()
 const route = useRoute()
 
 const menuOpen = ref(false)
+
+const repositoryUrl = 'https://github.com/yoosuf/vue-application-architecture'
 
 const menuItems = computed(() =>
   customer.isSignedIn
@@ -154,6 +157,22 @@ const styles = stylex.create({
       backgroundColor: colors.accentSoft,
     },
   },
+  githubLink: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: `${spacing.sm} ${spacing.md}`,
+    borderRadius: radii.md,
+    color: colors.textSecondary,
+    fontSize: typography.sizeBase,
+    fontWeight: typography.weightMedium,
+    textDecoration: 'none',
+    transition: `color ${motion.base} ${motion.easeOut}, background-color ${motion.base} ${motion.easeOut}`,
+    ':hover': {
+      color: colors.accent,
+      backgroundColor: colors.accentSoft,
+    },
+  },
   menuLinkChevron: {
     display: 'flex',
     color: colors.textSecondary,
@@ -245,6 +264,27 @@ const styles = stylex.create({
               <ChevronRight :size="18" />
             </span>
           </RouterLink>
+        </div>
+
+        <div v-bind="stylex.attrs(styles.menuGroup)">
+          <a
+            :href="repositoryUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            v-bind="
+              stylex.attrs(
+                styles.githubLink,
+                focusRing.visible,
+                reducedMotion.root,
+              )
+            "
+          >
+            <Github :size="18" aria-hidden="true" />
+            Source on GitHub
+            <span v-bind="stylex.attrs(visuallyHidden.root)">
+              (opens in a new tab)</span
+            >
+          </a>
         </div>
       </div>
 

@@ -214,6 +214,23 @@ describe('router', () => {
     expect(wrapper.text()).not.toContain('Log in')
   })
 
+  it('links the menu to the GitHub repository in a new tab', async () => {
+    const { wrapper } = await mountApp()
+
+    const repositoryLink = wrapper
+      .findAll('a')
+      .find(
+        (link) =>
+          link.attributes('href') ===
+          'https://github.com/yoosuf/vue-application-architecture',
+      )
+
+    expect(repositoryLink).toBeDefined()
+    expect(repositoryLink!.text()).toContain('Source on GitHub')
+    expect(repositoryLink!.attributes('target')).toBe('_blank')
+    expect(repositoryLink!.attributes('rel')).toBe('noopener noreferrer')
+  })
+
   it('signs in via the magic link form and lands on the account page', async () => {
     const { wrapper, router } = await mountApp()
 
