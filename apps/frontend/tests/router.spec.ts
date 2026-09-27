@@ -214,21 +214,50 @@ describe('router', () => {
     expect(wrapper.text()).not.toContain('Log in')
   })
 
-  it('links the menu to the GitHub repository in a new tab', async () => {
+  it('links the menu to the repository and the author in new tabs', async () => {
     const { wrapper } = await mountApp()
 
-    const repositoryLink = wrapper
+    const menu = wrapper.get('[role="dialog"]')
+    const repositoryLink = menu
       .findAll('a')
       .find(
         (link) =>
           link.attributes('href') ===
           'https://github.com/yoosuf/vue-application-architecture',
       )
+    const authorLink = menu
+      .findAll('a')
+      .find((link) => link.attributes('href') === 'https://yoosuf.me/')
 
-    expect(repositoryLink).toBeDefined()
-    expect(repositoryLink!.text()).toContain('Source on GitHub')
-    expect(repositoryLink!.attributes('target')).toBe('_blank')
-    expect(repositoryLink!.attributes('rel')).toBe('noopener noreferrer')
+    expect(menu.text()).toContain('Source on GitHub')
+    expect(menu.text()).toContain('Built by yoosuf')
+
+    for (const link of [repositoryLink, authorLink]) {
+      expect(link).toBeDefined()
+      expect(link!.attributes('target')).toBe('_blank')
+      expect(link!.attributes('rel')).toBe('noopener noreferrer')
+    }
+  })
+
+  it('credits the author and the repository in the footer', async () => {
+    const { wrapper } = await mountApp()
+
+    const projectLinks = wrapper.get('nav[aria-label="Project"]')
+    const hrefs = projectLinks
+      .findAll('a')
+      .map((link) => link.attributes('href'))
+
+    expect(hrefs).toEqual([
+      'https://github.com/yoosuf/vue-application-architecture',
+      'https://yoosuf.me/',
+    ])
+    expect(projectLinks.text()).toContain('GitHub')
+    expect(projectLinks.text()).toContain('yoosuf')
+    expect(
+      projectLinks
+        .findAll('a')
+        .every((link) => link.attributes('rel')?.includes('noopener')),
+    ).toBe(true)
   })
 
   it('signs in via the magic link form and lands on the account page', async () => {

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import * as stylex from '@stylexjs/stylex'
-import { ChevronRight, Github, Menu } from 'lucide-vue-next'
+import { ChevronRight, Github, Menu, User } from 'lucide-vue-next'
 import AppLogo from './AppLogo.vue'
 import Drawer from '@vue-application-architecture/design-system/ui/molecules/Drawer.vue'
 import IconButton from '@vue-application-architecture/design-system/ui/atoms/IconButton.vue'
@@ -25,6 +25,7 @@ import { useCatalogStore } from '../../modules/catalog'
 import { usePreferencesStore } from '../../modules/core'
 import { CartLink } from '../../modules/cart'
 import { useCustomerStore } from '../../modules/customer'
+import { authorName, authorUrl, repositoryUrl } from '../site'
 
 const catalog = useCatalogStore()
 const preferences = usePreferencesStore()
@@ -32,8 +33,6 @@ const customer = useCustomerStore()
 const route = useRoute()
 
 const menuOpen = ref(false)
-
-const repositoryUrl = 'https://github.com/yoosuf/vue-application-architecture'
 
 const menuItems = computed(() =>
   customer.isSignedIn
@@ -157,7 +156,7 @@ const styles = stylex.create({
       backgroundColor: colors.accentSoft,
     },
   },
-  githubLink: {
+  externalLink: {
     display: 'flex',
     alignItems: 'center',
     gap: spacing.sm,
@@ -273,7 +272,7 @@ const styles = stylex.create({
             rel="noopener noreferrer"
             v-bind="
               stylex.attrs(
-                styles.githubLink,
+                styles.externalLink,
                 focusRing.visible,
                 reducedMotion.root,
               )
@@ -281,6 +280,24 @@ const styles = stylex.create({
           >
             <Github :size="18" aria-hidden="true" />
             Source on GitHub
+            <span v-bind="stylex.attrs(visuallyHidden.root)">
+              (opens in a new tab)</span
+            >
+          </a>
+          <a
+            :href="authorUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            v-bind="
+              stylex.attrs(
+                styles.externalLink,
+                focusRing.visible,
+                reducedMotion.root,
+              )
+            "
+          >
+            <User :size="18" aria-hidden="true" />
+            Built by {{ authorName }}
             <span v-bind="stylex.attrs(visuallyHidden.root)">
               (opens in a new tab)</span
             >
