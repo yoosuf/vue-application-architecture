@@ -25,15 +25,17 @@ alias and cannot resolve package specifiers, so **any module referenced inside
 import { spacing } from '../../styles/tokens.stylex'
 
 // inside an app feature file — note the long relative hop
-import { colors, spacing } from
-  '../../../../../../packages/design-system/src/styles/tokens.stylex'
+import {
+  colors,
+  spacing,
+} from '../../../../../../packages/design-system/src/styles/tokens.stylex'
 ```
 
 The hop depth depends on where the file sits (`src/app/App.vue` uses 4 levels,
 `src/app/components/` uses 5, `src/modules/x/components/` uses 6). This is ugly
 and deliberate; do not "fix" it with an alias.
 
-Imports that are *not* used inside stylex calls — components, domain types,
+Imports that are _not_ used inside stylex calls — components, domain types,
 `global.css` — may use package specifiers:
 
 ```ts
@@ -46,13 +48,13 @@ safe.
 
 ## Where things live
 
-| File | Contents |
-| --- | --- |
+| File                                                 | Contents                                                                                              |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `packages/design-system/src/styles/tokens.stylex.ts` | `defineVars` token objects: `colors`, `spacing`, `typography`, `radii`, `shadows`, `motion`, `layout` |
-| `packages/design-system/src/styles/themes.stylex.ts` | `lightTheme`, `darkTheme` — `createTheme` classes over `colors` |
-| `packages/design-system/src/styles/shared.stylex.ts` | reusable style objects: `visuallyHidden`, `buttonReset`, `linkReset`, `focusRing`, `reducedMotion` |
-| `packages/design-system/src/styles/tokens.css` | the same tokens as CSS custom properties, for plain CSS/HTML |
-| `packages/design-system/src/styles/global.css` | resets/base, imported once in `main.ts` |
+| `packages/design-system/src/styles/themes.stylex.ts` | `lightTheme`, `darkTheme` — `createTheme` classes over `colors`                                       |
+| `packages/design-system/src/styles/shared.stylex.ts` | reusable style objects: `visuallyHidden`, `buttonReset`, `linkReset`, `focusRing`, `reducedMotion`    |
+| `packages/design-system/src/styles/tokens.css`       | the same tokens as CSS custom properties, for plain CSS/HTML                                          |
+| `packages/design-system/src/styles/global.css`       | resets/base, imported once in `main.ts`                                                               |
 
 Tokens have **two faces** — the StyleX vars used by components and the CSS
 custom properties used by plain CSS. When you write a token, update
@@ -88,12 +90,12 @@ const styles = stylex.create({
 
 ## Diagnosing StyleX problems
 
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| "Cannot find module" only at build, dev fine | an import *inside* `stylex.create`/`defineVars` uses `@/` or a package specifier | rewrite it as a relative path |
-| duplicated or missing rules | plugin order changed, or `stylexVuePlugin` lost `enforce: 'post'` | restore `[vue(), stylex.vite(), stylexVue()]` and the post plugin |
-| theme does not switch, or a `var(--…)` leaks | a token was imported through a non-relative path, or the theme class is not bound in `App.vue` | fix the import; check the class binding |
-| build emits more than one CSS file | the aggregation store stopped merging (`.vue` files not compiled) | confirm `stylexVuePlugin` is registered after `stylex.vite()` |
+| Symptom                                      | Cause                                                                                          | Fix                                                               |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| "Cannot find module" only at build, dev fine | an import _inside_ `stylex.create`/`defineVars` uses `@/` or a package specifier               | rewrite it as a relative path                                     |
+| duplicated or missing rules                  | plugin order changed, or `stylexVuePlugin` lost `enforce: 'post'`                              | restore `[vue(), stylex.vite(), stylexVue()]` and the post plugin |
+| theme does not switch, or a `var(--…)` leaks | a token was imported through a non-relative path, or the theme class is not bound in `App.vue` | fix the import; check the class binding                           |
+| build emits more than one CSS file           | the aggregation store stopped merging (`.vue` files not compiled)                              | confirm `stylexVuePlugin` is registered after `stylex.vite()`     |
 
 Verification: `pnpm --filter frontend build` should still produce a single CSS
 bundle; `pnpm --filter frontend dev` serves `/virtual:stylex.css` for live

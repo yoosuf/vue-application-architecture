@@ -12,12 +12,12 @@ facade — every feature module imports it from there:
 import { formatCurrency, formatDate } from '../../core'
 ```
 
-| Export | Signature | Notes |
-| --- | --- | --- |
-| `formatCurrency` | `(cents: number, options?: { locale?, currency?, compact? }) => string` | money in, money out. Defaults to `en-US` / `USD`; `compact` switches to compact notation. |
-| `formatDate` | `(value: Date \| number \| string, options?: Intl.DateTimeFormatOptions & { locale? }) => string` | accepts a `Date`, epoch milliseconds, or an ISO string. |
-| `EMPTY_VALUE` | `'—'` | returned by both formatters for unusable input |
-| `DEFAULT_LOCALE` / `DEFAULT_CURRENCY` | `'en-US'` / `'USD'` | the defaults the formatters use |
+| Export                                | Signature                                                                                         | Notes                                                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `formatCurrency`                      | `(cents: number, options?: { locale?, currency?, compact? }) => string`                           | money in, money out. Defaults to `en-US` / `USD`; `compact` switches to compact notation. |
+| `formatDate`                          | `(value: Date \| number \| string, options?: Intl.DateTimeFormatOptions & { locale? }) => string` | accepts a `Date`, epoch milliseconds, or an ISO string.                                   |
+| `EMPTY_VALUE`                         | `'—'`                                                                                             | returned by both formatters for unusable input                                            |
+| `DEFAULT_LOCALE` / `DEFAULT_CURRENCY` | `'en-US'` / `'USD'`                                                                               | the defaults the formatters use                                                           |
 
 `Intl` instances are cached per option shape, so hot paths (cart totals inside
 a `v-for`) do not rebuild formatters. The default locale is fixed rather than

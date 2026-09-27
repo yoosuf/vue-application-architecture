@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
     "dev": "pnpm --filter frontend dev",
     "build": "pnpm --filter frontend build",
@@ -13,7 +14,8 @@
     "test": "pnpm -r --if-present test",
     "test:watch": "pnpm -r --if-present test:watch",
     "lint": "pnpm -r --if-present lint",
-    "format": "prettier --write apps packages .prettierrc.json"
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",

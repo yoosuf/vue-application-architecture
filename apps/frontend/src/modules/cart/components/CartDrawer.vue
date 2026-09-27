@@ -124,22 +124,12 @@ const styles = stylex.create({
       <AppButton size="lg" block @click="goTo('/checkout')">Checkout</AppButton>
       <div v-bind="stylex.attrs(styles.actions)">
         <span v-bind="stylex.attrs(styles.action)">
-          <AppButton
-            variant="secondary"
-            size="sm"
-            block
-            @click="goTo('/cart')"
-          >
+          <AppButton variant="secondary" size="sm" block @click="goTo('/cart')">
             View Cart
           </AppButton>
         </span>
         <span v-bind="stylex.attrs(styles.action)">
-          <AppButton
-            variant="secondary"
-            size="sm"
-            block
-            @click="goTo('/')"
-          >
+          <AppButton variant="secondary" size="sm" block @click="goTo('/')">
             Explore more books
           </AppButton>
         </span>

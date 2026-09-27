@@ -17,14 +17,14 @@ The `types` package has no runner (it is type-only).
 
 ## Setup
 
-| | app | design system |
-| --- | --- | --- |
-| config | `apps/frontend/vite.config.ts` (`test` block) | `packages/design-system/vitest.config.ts` |
-| include | `tests/**/*.spec.ts` | `tests/**/*.spec.ts` |
-| environment | `happy-dom` | `happy-dom` |
-| globals | on (no imports of `describe`/`it`/`expect`) | on |
-| setup | `apps/frontend/tests/setup.ts` | none |
-| StyleX in tests | compiled by the same plugin pipeline as the app | same |
+|                 | app                                             | design system                             |
+| --------------- | ----------------------------------------------- | ----------------------------------------- |
+| config          | `apps/frontend/vite.config.ts` (`test` block)   | `packages/design-system/vitest.config.ts` |
+| include         | `tests/**/*.spec.ts`                            | `tests/**/*.spec.ts`                      |
+| environment     | `happy-dom`                                     | `happy-dom`                               |
+| globals         | on (no imports of `describe`/`it`/`expect`)     | on                                        |
+| setup           | `apps/frontend/tests/setup.ts`                  | none                                      |
+| StyleX in tests | compiled by the same plugin pipeline as the app | same                                      |
 
 `apps/frontend/tests/setup.ts` mocks `window.matchMedia` (the preferences
 store reads `prefers-color-scheme`) and clears `localStorage` before each test.
@@ -61,13 +61,13 @@ components load asynchronously. The working order in `tests/router.spec.ts`:
 
 ## Where the tests are
 
-| Area | File |
-| --- | --- |
-| Cart / checkout / catalog / customer / favorites / preferences stores | `apps/frontend/tests/stores/*.spec.ts` |
-| Components (`BookCard`, `OrderSummary`, `CartDrawer`, `AddToCartButton`, `BookGallery`, `CategoryFilter`, `FavoriteButton`) | `apps/frontend/tests/components/*.spec.ts` |
-| Formatters | `apps/frontend/tests/utils/format.spec.ts` |
-| End-to-end-ish flows (cart → checkout → confirmation, header cart drawer, magic-link sign-in, account sections, addresses, favorites, deep links and auth redirects) | `apps/frontend/tests/router.spec.ts` |
-| Every design-system component, plus barrel/root export parity | `packages/design-system/tests/<Component>.spec.ts`, `packages/design-system/tests/exports.spec.ts` |
+| Area                                                                                                                                                                 | File                                                                                               |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Cart / checkout / catalog / customer / favorites / preferences stores                                                                                                | `apps/frontend/tests/stores/*.spec.ts`                                                             |
+| Components (`BookCard`, `OrderSummary`, `CartDrawer`, `AddToCartButton`, `BookGallery`, `CategoryFilter`, `FavoriteButton`)                                          | `apps/frontend/tests/components/*.spec.ts`                                                         |
+| Formatters                                                                                                                                                           | `apps/frontend/tests/utils/format.spec.ts`                                                         |
+| End-to-end-ish flows (cart → checkout → confirmation, header cart drawer, magic-link sign-in, account sections, addresses, favorites, deep links and auth redirects) | `apps/frontend/tests/router.spec.ts`                                                               |
+| Every design-system component, plus barrel/root export parity                                                                                                        | `packages/design-system/tests/<Component>.spec.ts`, `packages/design-system/tests/exports.spec.ts` |
 
 When you add a design-system component, add a matching spec there and re-export
 it from `src/ui/atoms/index.ts` or `src/ui/molecules/index.ts` — `tests/exports.spec.ts`
@@ -79,4 +79,27 @@ in the app.
 
 A change is done when `pnpm lint`, `pnpm typecheck`, and `pnpm test` are green
 (add `pnpm build` when styles or bundling changed). Lint runs with `--fix`, so
-re-read any file it rewrote before committing.
+re-read any file it rewrote before committing. CI additionally runs
+`pnpm format:check`, so run `pnpm format` before pushing.
+
+## CI and publishing
+
+| Workflow                       | Trigger                                             | What it does                                                                                                                                         |
+| ------------------------------ | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/ci.yml`     | every push and PR to `main`                         | `pnpm install --frozen-lockfile`, then `format:check`, `lint`, `typecheck`, `test`, `build`; uploads `apps/frontend/dist` as the `web-dist` artifact |
+| `.github/workflows/deploy.yml` | green `CI` on `main`, or manual `workflow_dispatch` | rebuilds and publishes the app to Vercel                                                                                                             |
+
+Both use `pnpm/action-setup` (version from the root `packageManager` field),
+Node from `.nvmrc`, and a pnpm-store cache, so a run needs no configuration.
+
+The deploy step needs three repository secrets — `VERCEL_TOKEN`,
+`VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` (Settings → Secrets and variables →
+Actions). Without them the publish step is skipped with a note instead of
+failing the run.
+
+Deployment itself is configured by the root `vercel.json`, not by the workflow:
+`buildCommand` `pnpm --filter frontend build`, `outputDirectory`
+`apps/frontend/dist` (the build does **not** write to a root `dist/`), and a
+catch-all rewrite to `index.html` because the router uses `createWebHistory()`
+and every route is lazy. Vercel's own Git integration reads the same file, so
+use either that or the deploy workflow, not both.

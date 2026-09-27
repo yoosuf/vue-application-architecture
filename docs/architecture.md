@@ -21,18 +21,18 @@ here follows from it.
 
 ### Module map
 
-| Module | Owns | Public surface (`index.ts`) |
-| --- | --- | --- |
-| `core` | `NotFoundView`, the preferences store (theme), shared formatters (`utils/format.ts`) | `NotFoundView`, `usePreferencesStore`, `THEME_STORAGE_KEY`, `formatCurrency`, `formatDate`, …, `Theme` (re-exported from the design system) |
-| `catalog` | book data (deterministic faker mocks), search/category/sort state, all `Book*` components, `ExploreView`, `BookDetailsView` | `useCatalogStore`, `ALL_CATEGORIES`, `BookCard`, `BookGrid`, `BookCover`, `BookMeta`, `BookGallery`, `SortControl`, `catalogRoutes` |
-| `favorites` | the heart toggle and its persistence | `useFavoritesStore`, `FavoriteButton` |
-| `cart` | cart lines + totals, shipping constants, the slide-over drawer, `CartView` | `useCartStore`, `AddToCartButton`, `CartLineRow`, `CartDrawer`, `CartLink`, `OrderSummary`, `FLAT_SHIPPING_CENTS`, `SHIPPING_FREE_THRESHOLD_CENTS`, `cartRoutes` |
-| `checkout` | order placement and the receipt | `useCheckoutStore`, `checkoutRoutes` (which lazily load `CheckoutView`), `CheckoutDetails`/`Order`/`OrderLine` types |
-| `customer` | magic-link auth, the address book, notification prefs, the account sections | `useCustomerStore`, storage-key constants, `LoginView`, `LoginVerifyView`, `AccountView`, `customerRoutes`, `Customer`/`Address` types |
+| Module      | Owns                                                                                                                        | Public surface (`index.ts`)                                                                                                                                      |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core`      | `NotFoundView`, the preferences store (theme), shared formatters (`utils/format.ts`)                                        | `NotFoundView`, `usePreferencesStore`, `THEME_STORAGE_KEY`, `formatCurrency`, `formatDate`, …, `Theme` (re-exported from the design system)                      |
+| `catalog`   | book data (deterministic faker mocks), search/category/sort state, all `Book*` components, `ExploreView`, `BookDetailsView` | `useCatalogStore`, `ALL_CATEGORIES`, `BookCard`, `BookGrid`, `BookCover`, `BookMeta`, `BookGallery`, `SortControl`, `catalogRoutes`                              |
+| `favorites` | the heart toggle and its persistence                                                                                        | `useFavoritesStore`, `FavoriteButton`                                                                                                                            |
+| `cart`      | cart lines + totals, shipping constants, the slide-over drawer, `CartView`                                                  | `useCartStore`, `AddToCartButton`, `CartLineRow`, `CartDrawer`, `CartLink`, `OrderSummary`, `FLAT_SHIPPING_CENTS`, `SHIPPING_FREE_THRESHOLD_CENTS`, `cartRoutes` |
+| `checkout`  | order placement and the receipt                                                                                             | `useCheckoutStore`, `checkoutRoutes` (which lazily load `CheckoutView`), `CheckoutDetails`/`Order`/`OrderLine` types                                             |
+| `customer`  | magic-link auth, the address book, notification prefs, the account sections                                                 | `useCustomerStore`, storage-key constants, `LoginView`, `LoginVerifyView`, `AccountView`, `customerRoutes`, `Customer`/`Address` types                           |
 
 Notes that are easy to get wrong:
 
-- `CartLine.vue` is exported as `CartLineRow` because the `CartLine` *type*
+- `CartLine.vue` is exported as `CartLineRow` because the `CartLine` _type_
   is already exported from the same facade.
 - `catalog` is the only module with a `mocks/` directory; the app has no
   backend, so "data" means a seeded faker catalog.
@@ -78,14 +78,14 @@ Setup-style Pinia stores (`defineStore('name', () => { … })`), one per
 concern, each parsing its persisted state defensively (try/catch + shape
 checks) because `localStorage` is user-writable.
 
-| Store | Key surface | Persistence |
-| --- | --- | --- |
-| `catalog` | `books`, `filteredBooks`, `sortedBooks`, `featuredBook`, `categories`, `searchQuery`, `selectedCategory`, `sortOrder`; `setSearchQuery`, `setCategory`, `setSortOrder`, `findBookById`, `relatedBooks`; `ALL_CATEGORIES = 'All'` | in-memory (seeded faker catalog) |
-| `favorites` | heart toggles per book | `shelf:favorites` |
-| `preferences` | `theme` (`'light' \| 'dark'`), defaults to the OS `prefers-color-scheme` | `shelf:theme` |
-| `cart` | `items`, `entries`, `lineCount`, `count`, `subtotalCents`, `shippingCents`, `totalCents`; `addBook`, `setQuantity`, `removeBook`, `clear`, `openCart`, `closeCart`, `toggleCart`, `isCartOpen` | `shelf:cart` (`isCartOpen` is a non-persisted UI flag) |
-| `checkout` | `lastOrder`; `placeOrder(details)` snapshots the cart and clears it, `clearOrder` | in-memory only |
-| `customer` | magic-link auth, addresses, notification prefs, `recordOrder` | `shelf:customers`, `shelf:customer-session`, `shelf:magic-login` (15-min expiry) |
+| Store         | Key surface                                                                                                                                                                                                                      | Persistence                                                                      |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `catalog`     | `books`, `filteredBooks`, `sortedBooks`, `featuredBook`, `categories`, `searchQuery`, `selectedCategory`, `sortOrder`; `setSearchQuery`, `setCategory`, `setSortOrder`, `findBookById`, `relatedBooks`; `ALL_CATEGORIES = 'All'` | in-memory (seeded faker catalog)                                                 |
+| `favorites`   | heart toggles per book                                                                                                                                                                                                           | `shelf:favorites`                                                                |
+| `preferences` | `theme` (`'light' \| 'dark'`), defaults to the OS `prefers-color-scheme`                                                                                                                                                         | `shelf:theme`                                                                    |
+| `cart`        | `items`, `entries`, `lineCount`, `count`, `subtotalCents`, `shippingCents`, `totalCents`; `addBook`, `setQuantity`, `removeBook`, `clear`, `openCart`, `closeCart`, `toggleCart`, `isCartOpen`                                   | `shelf:cart` (`isCartOpen` is a non-persisted UI flag)                           |
+| `checkout`    | `lastOrder`; `placeOrder(details)` snapshots the cart and clears it, `clearOrder`                                                                                                                                                | in-memory only                                                                   |
+| `customer`    | magic-link auth, addresses, notification prefs, `recordOrder`                                                                                                                                                                    | `shelf:customers`, `shelf:customer-session`, `shelf:magic-login` (15-min expiry) |
 
 The cart cross-reads the catalog store (through the `catalog` facade) to
 resolve each line's book, so a cart line always renders current book data.
@@ -106,7 +106,7 @@ defensive posture to any new persisted shape.
   `index.ts`.
 - Forbidden: feature → `app`, feature → sibling internals, feature → `core`
   internals, and any `core` file importing a feature or `app` file.
-- Allowed: feature → design system (package specifier *or* relative hop into
+- Allowed: feature → design system (package specifier _or_ relative hop into
   `packages/design-system/src`), feature → sibling facades, feature → types,
   and anything inside `app/`.
 
@@ -150,7 +150,7 @@ When reviewing a change, verify:
 4. `core` imports no feature module and no `app` file.
 5. `packages/design-system` imports no app path and no
    `@vue-application-architecture/types`.
-6. Imports used *inside* `stylex.create`/`defineVars` are relative paths, not
+6. Imports used _inside_ `stylex.create`/`defineVars` are relative paths, not
    `@/` or package specifiers (see `styling.md`).
 7. New cross-module dependencies are added to `FEATURE_MODULES` in the app's
    ESLint config, and any new package export path exists in that package's
@@ -159,3 +159,19 @@ When reviewing a change, verify:
 Report a violation as
 `<file>:<line> — <source module> -> <target> — why it is forbidden`, with the
 fix (correct facade, package specifier, or relative StyleX path).
+
+## Build, CI and deployment
+
+Three repo-root files decide how the app is verified and published:
+
+| File                           | Role                                                                                                                                                                                                                                |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vercel.json`                  | `buildCommand` `pnpm --filter frontend build`, `outputDirectory` `apps/frontend/dist`, and a catch-all rewrite to `index.html` (the router uses `createWebHistory()`, so `/cart` and `/account/orders` must survive a hard refresh) |
+| `.github/workflows/ci.yml`     | every push/PR to `main`: install, `format:check`, `lint`, `typecheck`, `test`, `build`, then upload `apps/frontend/dist`                                                                                                            |
+| `.github/workflows/deploy.yml` | after a green `CI` on `main` (or manually): publish to Vercel, skipping cleanly when the Vercel secrets are absent                                                                                                                  |
+
+The build output is `apps/frontend/dist`, **not** a root `dist/` — the
+workspace root holds no app output, which is what makes a Vercel project
+configured with the default `dist` fail with "No Output Directory named dist
+found". Details, including the required secrets, are in
+[`testing.md`](testing.md#ci-and-publishing).

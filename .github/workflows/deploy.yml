@@ -1,0 +1,54 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  vercel:
+    name: Publish to Vercel
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Publish
+        if: env.VERCEL_TOKEN != '' && env.VERCEL_PROJECT_ID != ''
+        run: pnpm dlx vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN"
+
+      - name: Missing secrets
+        if: env.VERCEL_TOKEN == '' || env.VERCEL_PROJECT_ID == ''
+        run: |
+          echo "VERCEL_TOKEN / VERCEL_ORG_ID / VERCEL_PROJECT_ID are not set;"
+          echo "skipping the publish step. Vercel's own Git integration still"
+          echo "deploys every push to main using vercel.json."

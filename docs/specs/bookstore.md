@@ -36,16 +36,17 @@ checkout are new sibling feature modules in the modular monolith.
 
 ## 4. Information architecture
 
-| Route       | Module   | Name        | Title         | Notes                              |
-| ----------- | -------- | ----------- | ------------- | ---------------------------------- |
-| `/`         | catalog  | `explore`   | Explore         | cards now show price + add-to-cart |
-| `/collections/:category` | catalog | `collection` | e.g. History | category-selected catalog, slug URL |
-| `/products/:id`| catalog| `book-details` | Book Details | price + quantity stepper           |
-| `/cart`     | cart     | `cart`      | Your Cart     | line items, summary, checkout CTA  |
-| `/checkout` | checkout | `checkout`  | Checkout      | form + summary, or confirmation    |
-| `/account/favorites` | customer | `account-favorites` | Your Favorites | account section reusing the favorites grid |
+| Route                    | Module   | Name                | Title          | Notes                                      |
+| ------------------------ | -------- | ------------------- | -------------- | ------------------------------------------ |
+| `/`                      | catalog  | `explore`           | Explore        | cards now show price + add-to-cart         |
+| `/collections/:category` | catalog  | `collection`        | e.g. History   | category-selected catalog, slug URL        |
+| `/products/:id`          | catalog  | `book-details`      | Book Details   | price + quantity stepper                   |
+| `/cart`                  | cart     | `cart`              | Your Cart      | line items, summary, checkout CTA          |
+| `/checkout`              | checkout | `checkout`          | Checkout       | form + summary, or confirmation            |
+| `/account/favorites`     | customer | `account-favorites` | Your Favorites | account section reusing the favorites grid |
 
 `/checkout` renders three states:
+
 1. cart has items → checkout form;
 2. cart is empty and an order was just placed → confirmation receipt;
 3. cart is empty otherwise → empty state with a link back to the cart.
@@ -70,8 +71,15 @@ price `$3.00–$22.00` above the sale price. The types demo
 ### Cart line
 
 ```ts
-export interface CartItem { bookId: string; quantity: number }
-export interface CartLine  { book: Book; quantity: number; lineTotalCents: number }
+export interface CartItem {
+  bookId: string
+  quantity: number
+}
+export interface CartLine {
+  book: Book
+  quantity: number
+  lineTotalCents: number
+}
 ```
 
 Cart entries are id+quantity pairs; line/price data is joined against the
@@ -81,8 +89,8 @@ catalog store at read time, so stale ids (removed books) render no line.
 
 ```ts
 export interface Order extends CheckoutDetails {
-  id: string          // SHELF-YYYYMMDD-######
-  placedAt: string    // ISO timestamp
+  id: string // SHELF-YYYYMMDD-######
+  placedAt: string // ISO timestamp
   lines: OrderLine[]
   subtotalCents: number
   shippingCents: number

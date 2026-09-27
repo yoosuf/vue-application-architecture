@@ -23,15 +23,15 @@ the package, so a boundary mistake fails `pnpm lint`. The rule is scoped to
 edits hot-reload. Any new subpath must be added to `package.json` `exports`
 (explicit keys first, wildcards last) or it is unreachable from the app.
 
-| Specifier | Resolves to |
-| --- | --- |
-| `@vue-application-architecture/design-system` | `src/index.ts` (every atom + molecule, `Theme`) |
-| `.../theme` | `src/theme.ts` — `Theme = 'light' \| 'dark'` |
-| `.../styles/global.css` | resets/base, imported once by the app's `main.ts` |
-| `.../styles/tokens.css` | tokens as CSS custom properties (`data-ds-theme="dark"` switch) |
-| `.../styles/tokens.stylex`, `.../styles/themes.stylex`, `.../styles/shared.stylex` | the StyleX layer |
-| `.../ui/atoms` / `.../ui/atoms/X.vue` | atoms |
-| `.../ui/molecules` / `.../ui/molecules/X.vue` | molecules |
+| Specifier                                                                          | Resolves to                                                     |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `@vue-application-architecture/design-system`                                      | `src/index.ts` (every atom + molecule, `Theme`)                 |
+| `.../theme`                                                                        | `src/theme.ts` — `Theme = 'light' \| 'dark'`                    |
+| `.../styles/global.css`                                                            | resets/base, imported once by the app's `main.ts`               |
+| `.../styles/tokens.css`                                                            | tokens as CSS custom properties (`data-ds-theme="dark"` switch) |
+| `.../styles/tokens.stylex`, `.../styles/themes.stylex`, `.../styles/shared.stylex` | the StyleX layer                                                |
+| `.../ui/atoms` / `.../ui/atoms/X.vue`                                              | atoms                                                           |
+| `.../ui/molecules` / `.../ui/molecules/X.vue`                                      | molecules                                                       |
 
 ## The kit today
 

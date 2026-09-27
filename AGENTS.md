@@ -5,14 +5,14 @@ the single entry point: read this file, then open the doc it points to for the
 area you are touching. Everything here is plain Markdown with no tool-specific
 config, so the same file works for every agent.
 
-| Doc | Read it when |
-| --- | --- |
-| [`docs/architecture.md`](docs/architecture.md) | adding/changing modules, facades, stores, routes, or reviewing dependencies |
-| [`docs/styling.md`](docs/styling.md) | writing or debugging any StyleX styles |
-| [`docs/formatting.md`](docs/formatting.md) | rendering money or dates |
-| [`docs/testing.md`](docs/testing.md) | writing or running tests |
-| [`docs/design-system.md`](docs/design-system.md) | touching `packages/design-system` or deciding kit vs. app |
-| [`docs/specs/bookstore.md`](docs/specs/bookstore.md) | changing cart, checkout, pricing, or order flow |
+| Doc                                                  | Read it when                                                                |
+| ---------------------------------------------------- | --------------------------------------------------------------------------- |
+| [`docs/architecture.md`](docs/architecture.md)       | adding/changing modules, facades, stores, routes, or reviewing dependencies |
+| [`docs/styling.md`](docs/styling.md)                 | writing or debugging any StyleX styles                                      |
+| [`docs/formatting.md`](docs/formatting.md)           | rendering money or dates                                                    |
+| [`docs/testing.md`](docs/testing.md)                 | writing or running tests                                                    |
+| [`docs/design-system.md`](docs/design-system.md)     | touching `packages/design-system` or deciding kit vs. app                   |
+| [`docs/specs/bookstore.md`](docs/specs/bookstore.md) | changing cart, checkout, pricing, or order flow                             |
 
 ## What this repo is
 
@@ -44,7 +44,8 @@ pnpm test              # vitest once, every package
 pnpm test:watch        # vitest watch
 pnpm lint              # eslint --fix, every package
 pnpm typecheck         # vue-tsc, every package
-pnpm format            # prettier across sources
+pnpm format            # prettier across the repo
+pnpm format:check      # prettier --check, what CI runs
 ```
 
 Package-scoped: `pnpm --filter frontend ...`,
@@ -52,7 +53,8 @@ Package-scoped: `pnpm --filter frontend ...`,
 
 **Definition of done:** run `pnpm lint`, `pnpm typecheck`, `pnpm test` (plus
 `pnpm build` when styles or bundling changed) and leave them green. Lint runs
-with `--fix`, so re-read files it rewrote.
+with `--fix`, so re-read files it rewrote. CI (`.github/workflows/ci.yml`) runs
+`format:check` on top of that list, so run `pnpm format` before pushing.
 
 ## The rules that matter
 
@@ -119,14 +121,14 @@ Rules 1–3 are enforced by two custom ESLint rules, so a boundary mistake fails
 All knowledge lives in this file and `docs/`. Every editor/agent tool gets the
 same content through a one-line pointer, so nothing needs duplicating:
 
-| Tool | Pointer |
-| --- | --- |
-| any tool that reads `AGENTS.md` (opencode, Codex, Cursor, Cline, …) | `AGENTS.md` (this file) |
-| Claude Code | `CLAUDE.md` → `@AGENTS.md` |
-| Gemini CLI | `GEMINI.md` → `@AGENTS.md` |
-| Cursor | `.cursor/rules/shelf-project.mdc` |
-| GitHub Copilot | `.github/instructions/agent-guidance.instructions.md` |
-| opencode | `opencode.json` → `instructions: ["AGENTS.md"]` |
+| Tool                                                                | Pointer                                               |
+| ------------------------------------------------------------------- | ----------------------------------------------------- |
+| any tool that reads `AGENTS.md` (opencode, Codex, Cursor, Cline, …) | `AGENTS.md` (this file)                               |
+| Claude Code                                                         | `CLAUDE.md` → `@AGENTS.md`                            |
+| Gemini CLI                                                          | `GEMINI.md` → `@AGENTS.md`                            |
+| Cursor                                                              | `.cursor/rules/shelf-project.mdc`                     |
+| GitHub Copilot                                                      | `.github/instructions/agent-guidance.instructions.md` |
+| opencode                                                            | `opencode.json` → `instructions: ["AGENTS.md"]`       |
 
 When you learn something non-obvious, put it here or in the matching
 `docs/*.md` file — never in a tool-specific pointer. A new tool only needs a
