@@ -10,8 +10,10 @@ import type { CategoryFilter as CategoryFilterValue } from '../stores/catalog.st
 import { BookGrid } from '..'
 import { AddToCartButton } from '../../cart'
 import { FavoriteButton } from '../../favorites'
-import { SearchBar } from '@vue-application-architecture/design-system'
-import { EmptyState } from '@vue-application-architecture/design-system'
+import {
+  EmptyState,
+  SearchBar,
+} from '@vue-application-architecture/design-system'
 import Breadcrumbs from '@vue-application-architecture/design-system/ui/molecules/Breadcrumbs.vue'
 import PageSection from '@vue-application-architecture/design-system/ui/molecules/PageSection.vue'
 import SectionHeading from '@vue-application-architecture/design-system/ui/atoms/SectionHeading.vue'

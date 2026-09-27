@@ -15,6 +15,17 @@ import {
 type ImportExportNode =
   ImportDeclaration | ExportNamedDeclaration | ExportAllDeclaration
 
+const ALLOWED_PACKAGES = new Set([
+  '@stylexjs/stylex',
+  'lucide-vue-next',
+  'vue',
+  'vue-router',
+])
+
+function isBareSpecifier(source: string) {
+  return !source.startsWith('.') && !source.startsWith('/')
+}
+
 export default defineConfigWithVueTs(
   {
     name: 'design-system/files-to-lint',
@@ -37,6 +48,7 @@ export default defineConfigWithVueTs(
 
   {
     name: 'design-system/custom-rules',
+    files: ['src/**/*.{ts,tsx,vue}'],
     rules: {
       'vue/multi-word-component-names': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
@@ -53,6 +65,18 @@ export default defineConfigWithVueTs(
                 if (!node.source || typeof node.source.value !== 'string')
                   return
                 const source = node.source.value
+                if (isBareSpecifier(source)) {
+                  if (ALLOWED_PACKAGES.has(source)) return
+                  context.report({
+                    node,
+                    message: `design-system source may only import ${[
+                      ...ALLOWED_PACKAGES,
+                    ]
+                      .map((name) => `"${name}"`)
+                      .join(', ')}; "${source}" is not one of them.`,
+                  })
+                  return
+                }
                 const target = resolve(dirname(context.filename), source)
                 const insidePackage = !relative(pkgRoot, target).startsWith(
                   '..',

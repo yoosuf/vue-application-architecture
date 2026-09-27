@@ -1,11 +1,11 @@
 import vue from '@vitejs/plugin-vue'
-import stylex from '@stylexjs/unplugin'
 import { fileURLToPath, URL } from 'node:url'
+import { stylexVite } from './config/stylexVitePlugin.ts'
 import { stylexVue } from './config/stylexVuePlugin.ts'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  plugins: [vue(), stylex.vite(), stylexVue()],
+  plugins: [vue(), stylexVite(), stylexVue()],
 
   resolve: {
     alias: {

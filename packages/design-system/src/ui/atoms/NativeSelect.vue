@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import * as stylex from '@stylexjs/stylex'
+import { ChevronDown } from 'lucide-vue-next'
 import { focusRing, reducedMotion } from '../../styles/shared.stylex'
 import { colors, radii, typography } from '../../styles/tokens.stylex'
 
@@ -23,8 +24,14 @@ const emit = defineEmits<{
 }>()
 
 const styles = stylex.create({
+  root: {
+    position: 'relative',
+    display: 'inline-flex',
+    alignItems: 'center',
+  },
   select: {
     appearance: 'none',
+    width: '100%',
     padding: '8px 32px 8px 12px',
     borderRadius: radii.sm,
     border: `1px solid ${colors.border}`,
@@ -35,10 +42,6 @@ const styles = stylex.create({
     fontWeight: typography.weightMedium,
     lineHeight: typography.leadingTight,
     cursor: 'pointer',
-    backgroundImage:
-      "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'><path d='m6 9 6 6 6-6'/></svg>\")",
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'right 10px center',
     ':hover': {
       borderColor: colors.borderStrong,
     },
@@ -46,6 +49,13 @@ const styles = stylex.create({
       opacity: 0.5,
       cursor: 'not-allowed',
     },
+  },
+  chevron: {
+    position: 'absolute',
+    right: 10,
+    display: 'flex',
+    pointerEvents: 'none',
+    color: colors.textSecondary,
   },
   flex: {
     flex: '1 1 auto',
@@ -55,28 +65,30 @@ const styles = stylex.create({
 </script>
 
 <template>
-  <select
-    :value="props.modelValue"
-    :aria-label="props.ariaLabel"
-    :disabled="props.disabled"
-    v-bind="
-      stylex.attrs(
-        styles.select,
-        props.flex && styles.flex,
-        focusRing.visible,
-        reducedMotion.root,
-      )
-    "
-    @change="
-      emit('update:modelValue', ($event.target as HTMLSelectElement).value)
-    "
-  >
-    <option
-      v-for="option in props.options"
-      :key="option.value"
-      :value="option.value"
+  <span v-bind="stylex.attrs(styles.root, props.flex && styles.flex)">
+    <select
+      :value="props.modelValue"
+      :aria-label="props.ariaLabel"
+      :disabled="props.disabled"
+      v-bind="
+        stylex.attrs(styles.select, focusRing.visible, reducedMotion.root)
+      "
+      @change="
+        emit('update:modelValue', ($event.target as HTMLSelectElement).value)
+      "
     >
-      {{ option.label }}
-    </option>
-  </select>
+      <option
+        v-for="option in props.options"
+        :key="option.value"
+        :value="option.value"
+      >
+        {{ option.label }}
+      </option>
+    </select>
+    <ChevronDown
+      :size="12"
+      v-bind="stylex.attrs(styles.chevron)"
+      aria-hidden="true"
+    />
+  </span>
 </template>

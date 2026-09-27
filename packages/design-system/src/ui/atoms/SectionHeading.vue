@@ -18,10 +18,6 @@ const props = withDefaults(
   },
 )
 
-const sizeStyle = computed(() =>
-  props.size === '2xl' ? styles.size2xl : styles.size3xl,
-)
-
 const styles = stylex.create({
   base: {
     fontFamily: typography.fontDisplay,
@@ -53,6 +49,10 @@ const styles = stylex.create({
     marginBlockEnd: spacing.lg,
   },
 })
+
+const sizeStyle = computed(() =>
+  props.size === '2xl' ? styles.size2xl : styles.size3xl,
+)
 
 function marginStyleFor(
   value: 'none' | 'sm' | 'md' | 'lg',

@@ -12,7 +12,7 @@ const props = withDefaults(
   }>(),
   {
     type: 'button',
-    pressed: false,
+    pressed: undefined,
     disabled: false,
   },
 )
@@ -66,7 +66,7 @@ const styles = stylex.create({
   <button
     :type="props.type"
     :aria-label="props.label"
-    :aria-pressed="props.pressed ? 'true' : 'false'"
+    :aria-pressed="props.pressed"
     :disabled="props.disabled"
     v-bind="
       stylex.attrs(

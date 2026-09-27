@@ -3,6 +3,7 @@ import { createPinia, setActivePinia, type Pinia } from 'pinia'
 import OrderSummary from '@/modules/cart/components/OrderSummary.vue'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
+import { formatCurrency } from '@/modules/core'
 
 function mountSummary(pinia: Pinia) {
   return mount(OrderSummary, {
@@ -52,8 +53,6 @@ describe('OrderSummary', () => {
 
     const wrapper = mountSummary(pinia)
 
-    expect(wrapper.text()).toContain(
-      '$' + ((book.priceCents * 3) / 100).toFixed(2),
-    )
+    expect(wrapper.text()).toContain(formatCurrency(book.priceCents * 3))
   })
 })

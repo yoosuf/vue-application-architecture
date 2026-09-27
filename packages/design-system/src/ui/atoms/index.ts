@@ -13,6 +13,7 @@ import StatusAnnouncer from './StatusAnnouncer.vue'
 import TextButton from './TextButton.vue'
 import TextField from './TextField.vue'
 import ThemeToggle from './ThemeToggle.vue'
+import Toggle from './Toggle.vue'
 
 export {
   AppButton,
@@ -30,4 +31,5 @@ export {
   TextButton,
   TextField,
   ThemeToggle,
+  Toggle,
 }

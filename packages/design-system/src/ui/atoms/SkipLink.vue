@@ -15,7 +15,9 @@ const props = withDefaults(
 )
 
 function skipToContent() {
-  document.getElementById(props.targetId)?.focus()
+  const target = document.getElementById(props.targetId)
+  target?.focus()
+  target?.scrollIntoView()
 }
 
 const styles = stylex.create({

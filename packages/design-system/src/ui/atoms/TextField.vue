@@ -150,8 +150,12 @@ const styles = stylex.create({
     >
       {{ props.error }}
     </p>
-    <p v-else-if="props.hint" :id="`${inputId}-support`">
-      <span v-bind="stylex.attrs(styles.hint)">{{ props.hint }}</span>
+    <p
+      v-else-if="props.hint"
+      :id="`${inputId}-support`"
+      v-bind="stylex.attrs(styles.hint)"
+    >
+      {{ props.hint }}
     </p>
   </div>
 </template>

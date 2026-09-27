@@ -32,10 +32,17 @@ const panelId = `${baseId}-panel`
 
 const internalActive = ref(props.modelValue ?? 0)
 
-const activeIndex = computed(() => props.modelValue ?? internalActive.value)
+function clamp(index: number) {
+  if (props.labels.length === 0) return 0
+  return Math.min(Math.max(index, 0), props.labels.length - 1)
+}
+
+const activeIndex = computed(() =>
+  clamp(props.modelValue ?? internalActive.value),
+)
 
 function activate(index: number) {
-  const bounded = Math.min(Math.max(index, 0), props.labels.length - 1)
+  const bounded = clamp(index)
   internalActive.value = bounded
   emit('update:modelValue', bounded)
   emit('change', bounded)

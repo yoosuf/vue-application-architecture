@@ -8,6 +8,7 @@ import { useCartStore } from '@/modules/cart/stores/cart.store'
 import { useCheckoutStore } from '@/modules/checkout/stores/checkout.store'
 import { useCustomerStore } from '@/modules/customer/stores/customer.store'
 import { useFavoritesStore } from '@/modules/favorites/stores/favorites.store'
+import { usePreferencesStore } from '@/modules/core'
 
 async function mountApp() {
   const pinia = createPinia()
@@ -518,5 +519,17 @@ describe('router', () => {
     const zip = wrapper.get('input[autocomplete="postal-code"]')
       .element as HTMLInputElement
     expect(zip.value).toBe('SW1A 1AA')
+  })
+
+  it('drives the CSS token theme from the preferences store', async () => {
+    await mountApp()
+    const preferences = usePreferencesStore()
+
+    expect(document.documentElement.dataset.dsTheme).toBe('light')
+
+    preferences.setTheme('dark')
+    await flushPromises()
+
+    expect(document.documentElement.dataset.dsTheme).toBe('dark')
   })
 })

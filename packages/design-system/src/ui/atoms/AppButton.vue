@@ -29,9 +29,17 @@ const props = withDefaults(
   },
 )
 
-defineEmits<{
+const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
+
+function onClick(event: MouseEvent) {
+  if (props.disabled) {
+    event.preventDefault()
+    return
+  }
+  emit('click', event)
+}
 
 const styles = stylex.create({
   base: {
@@ -133,6 +141,7 @@ const styles = stylex.create({
         reducedMotion.root,
       )
     "
+    @click="onClick"
   >
     <slot />
   </RouterLink>
@@ -155,7 +164,7 @@ const styles = stylex.create({
         reducedMotion.root,
       )
     "
-    @click="$emit('click', $event)"
+    @click="onClick"
   >
     <slot />
   </button>

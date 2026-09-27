@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppShell from './components/AppShell.vue'
 import SkipLink from '@vue-application-architecture/design-system/ui/atoms/SkipLink.vue'
@@ -23,6 +23,10 @@ const themeClass = computed(() =>
 )
 
 const colorScheme = computed(() => preferences.theme)
+
+watchEffect(() => {
+  document.documentElement.dataset.dsTheme = preferences.theme
+})
 
 const isNavigating = ref(false)
 const removeBeforeEach = router.beforeEach(() => {

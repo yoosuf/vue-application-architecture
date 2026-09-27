@@ -5,7 +5,7 @@ the brand tokens, light/dark theming, and a catalog of domain-free Vue atoms and
 molecules — everything a Shelf UI is built from.
 
 - **Domain-free** — zero knowledge of books, shelves, or any Shelf entity. The
-  product layer (`@vue-application-architecture/types` + the app's `shared` book components) depends on
+  product layer (`@vue-application-architecture/types` + the app's `catalog` book components) depends on
   this kit, never the other way around.
 - **Source-first** — `exports` points at `.vue`/`.ts` sources, so there is no
   build step and edits hot-reload in the app. The package ships **ready to
@@ -30,7 +30,8 @@ src/
   ui/
     atoms/                # AppButton, Chip, IconButton, Loader, NativeSelect, NavLink,
                           # QuantityStepper, Rating, SearchField, SectionHeading,
-                          # SkipLink, StatusAnnouncer, TextButton, TextField, ThemeToggle
+                          # SkipLink, StatusAnnouncer, TextButton, TextField, ThemeToggle,
+                          # Toggle
     molecules/            # Breadcrumbs, Drawer, EmptyState, FilterGroup, FormSection, MainContent, PageSection, ResponsiveGrid, SearchBar, Tabs
 tests/                    # per-component Vitest specs
 vitest.config.ts
@@ -55,15 +56,15 @@ const styles = stylex.create({
 })
 ```
 
-| Group        | Exports                                                                                                                                                                     |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `colors`     | background, surface, surfaceHover, textPrimary, textSecondary, textOnAccent, accent, accentHover, accentSoft, border, borderStrong, favorite, favoriteSoft, shadow, overlay |
-| `spacing`    | xxs, xs, sm, md, lg, xl, xxl, xxxl                                                                                                                                          |
-| `typography` | fontSans, fontDisplay, sizeXs…size4xl, leadingTight/Snug/Normal, weightRegular/Medium/Bold                                                                                  |
-| `radii`      | sm, md, lg, circle                                                                                                                                                          |
-| `shadows`    | card, cardHover                                                                                                                                                             |
-| `motion`     | fast, base, slow, easeOut                                                                                                                                                   |
-| `layout`     | headerHeight, pageMaxWidth, pageGutter                                                                                                                                      |
+| Group        | Exports                                                                                                                                                                                         |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `colors`     | background, surface, surfaceHover, textPrimary, textSecondary, textOnAccent, accent, accentHover, accentSoft, border, borderStrong, favorite, favoriteSoft, danger, dangerSoft, shadow, overlay |
+| `spacing`    | xxs, xs, sm, md, lg, xl, xxl, xxxl                                                                                                                                                              |
+| `typography` | fontSans, fontDisplay, sizeXs…size4xl, leadingTight/Snug/Normal, weightRegular/Medium/Bold                                                                                                      |
+| `radii`      | sm, md, lg, circle                                                                                                                                                                              |
+| `shadows`    | card, cardHover                                                                                                                                                                                 |
+| `motion`     | fast, base, slow, easeOut                                                                                                                                                                       |
+| `layout`     | headerHeight, pageMaxWidth, pageGutter                                                                                                                                                          |
 
 ### CSS custom properties (plain CSS, HTML, third-party UIs)
 
@@ -118,19 +119,22 @@ No component imports a store or a router instance.
 
 | Export                        | Description                                                                                                                                                                                                                                |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ui/atoms/AppButton`          | Button or `RouterLink`-based (`to`), variants `primary`/`secondary`, sizes `sm`/`md`/`lg`, `type`, `disabled`. Emits `click`.                                                                                                              |
+| `ui/atoms/AppButton`          | Button or `RouterLink`-based (`to`), variants `primary`/`secondary`, sizes `sm`/`md`/`lg`, `type`, `disabled`. Emits `click` from both branches; a `disabled` link does not navigate.                                                      |
 | `ui/atoms/Chip`               | Toggleable filter chip: `label`/default slot, `selected` → `aria-pressed`. Emits `select`.                                                                                                                                                 |
-| `ui/atoms/IconButton`         | Round icon button: required `label` (aria), `pressed`, `disabled`. Emits `click`.                                                                                                                                                          |
+| `ui/atoms/IconButton`         | Round icon button: required `label` (aria), `disabled`. `pressed` is optional and only sets `aria-pressed` when passed, so a plain icon button is not announced as a toggle. Emits `click`.                                                |
 | `ui/atoms/Loader`             | Spinner with a `role="status"` group; `size` (px) and hidden `label`. Reduced-motion aware.                                                                                                                                                |
-| `ui/atoms/NativeSelect`       | Styled native `<select>`: `modelValue`, `options: { value, label }[]`, `ariaLabel`, `disabled`, `flex`. Emits `update:modelValue`.                                                                                                         |
+| `ui/atoms/NativeSelect`       | Styled native `<select>`: `modelValue`, `options: { value, label }[]`, `ariaLabel`, `disabled`, `flex`. The chevron is a themed icon, not a baked image. Emits `update:modelValue`.                                                        |
 | `ui/atoms/NavLink`            | Router-aware nav anchor (`to`, `label`); `aria-current="page"` on the active route. Redirect-focused.                                                                                                                                      |
+| `ui/atoms/QuantityStepper`    | Accessible `-`/`+` stepper around a readonly value display: `modelValue`, `min`, `max`, `step`, `label`, `disabled`. Emits `update:modelValue`.                                                                                            |
 | `ui/atoms/Rating`             | Star + numeric rating; accepts `value`, announces `Rated X out of 5`.                                                                                                                                                                      |
 | `ui/atoms/SearchField`        | `v-model:modelValue` search input, icon, conditional clear button, `placeholder`, `ariaLabel`.                                                                                                                                             |
 | `ui/atoms/SectionHeading`     | Section heading rendered as `h1`/`h2`/`h3` (`level`, default `h2`), `size` `2xl`/`3xl`, `id`, `marginBlockEnd`.                                                                                                                            |
 | `ui/atoms/SkipLink`           | Keyboard skip link (`targetId`, default `main-content`; `label`); moves focus to the target on activation.                                                                                                                                 |
 | `ui/atoms/StatusAnnouncer`    | Visually hidden live region (`role="status"`) that announces `message` to screen readers.                                                                                                                                                  |
 | `ui/atoms/TextButton`         | Quiet text-action button: underline + accent (or `tone="danger"`), `type`, `disabled`. Emits `click`.                                                                                                                                      |
+| `ui/atoms/TextField`          | Labelled input with hint and error slots on the same support node: `modelValue`, `label`, `type`, `placeholder`, `hint`, `error`, `autocomplete`, `inputmode`, `required`, `disabled`. Emits `update:modelValue`.                          |
 | `ui/atoms/ThemeToggle`        | `theme: Theme` in, `toggle` out; announces the active theme in a live region.                                                                                                                                                              |
+| `ui/atoms/Toggle`             | `role="switch"` button: `label` (aria + visible), `checked`, `disabled`. Emits `update:checked`.                                                                                                                                           |
 | `ui/molecules/Drawer`         | Right-side slide-over with scrim: `open`, `title`; emits `close` (X, Escape, scrim click); traps focus, restores focus, locks page scroll. `footer` optional.                                                                              |
 | `ui/molecules/Breadcrumbs`    | Accessible breadcrumb trail (`nav` + `ol`): `items: readonly { label, to? }[]`; items with `to` render as `RouterLink`, trailing item without `to` is current (`aria-current="page"`), chevron separators, `label` for the nav aria-label. |
 | `ui/molecules/EmptyState`     | Centered empty/error panel: `title`, `message`, `headingLevel`, action slot.                                                                                                                                                               |
@@ -184,7 +188,7 @@ Shared StyleX utilities live in `shared.stylex.ts`:
 ```bash
 pnpm --filter @vue-application-architecture/design-system demo         # standalone Vite playground
 pnpm --filter @vue-application-architecture/design-system demo:build   # production build of the demo
-pnpm --filter @vue-application-architecture/design-system test        # vitest (21 spec files)
+pnpm --filter @vue-application-architecture/design-system test         # vitest (one spec per component)
 pnpm --filter @vue-application-architecture/design-system test:watch
 pnpm --filter @vue-application-architecture/design-system typecheck
 pnpm --filter @vue-application-architecture/design-system lint
@@ -197,7 +201,8 @@ package, including this one.
 ## Demo
 
 `pnpm demo` (or `pnpm demo:ds` from the repo root) boots a self-contained
-playground that renders the whole component catalog — atoms, molecules, both
-theme faces (the StyleX `ThemeToggle` and the `data-ds-theme` CSS token layer),
-and live `--ds-*` swatches. It depends only on this package: no `@vue-application-architecture/types`,
-no app code.
+playground for the atoms and molecules — buttons, icon button, loader, rating,
+search field and bar, theme toggle, empty state — showing both theme faces (the
+StyleX `ThemeToggle` and the `data-ds-theme` CSS token layer) and live `--ds-*`
+swatches. It depends only on this package: no
+`@vue-application-architecture/types`, no app code.

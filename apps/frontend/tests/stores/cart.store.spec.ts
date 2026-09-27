@@ -1,7 +1,9 @@
 import { createPinia, setActivePinia } from 'pinia'
-import { useCartStore } from '@/modules/cart/stores/cart.store'
+import {
+  CART_STORAGE_KEY,
+  useCartStore,
+} from '@/modules/cart/stores/cart.store'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
-import { CART_STORAGE_KEY } from '@/modules/cart/stores/cart.store'
 import {
   FLAT_SHIPPING_CENTS,
   SHIPPING_FREE_THRESHOLD_CENTS,

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
-import { watch } from 'vue'
+import { reactive, watch } from 'vue'
 import * as stylex from '@stylexjs/stylex'
 import AppButton from '@vue-application-architecture/design-system/ui/atoms/AppButton.vue'
 import TextField from '@vue-application-architecture/design-system/ui/atoms/TextField.vue'

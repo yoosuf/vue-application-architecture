@@ -6,13 +6,10 @@ import IconButton from '../atoms/IconButton.vue'
 import { reducedMotion } from '../../styles/shared.stylex'
 import { colors, motion, spacing, typography } from '../../styles/tokens.stylex'
 
-const props = withDefaults(
-  defineProps<{
-    open: boolean
-    title: string
-  }>(),
-  {},
-)
+const props = defineProps<{
+  open: boolean
+  title: string
+}>()
 
 const emit = defineEmits<{
   close: []
@@ -27,35 +24,41 @@ const titleId = `drawer-title-${useId()}`
 const panelRef = ref<HTMLElement | null>(null)
 const closeButtonRef = ref<InstanceType<typeof IconButton> | null>(null)
 let previouslyFocused: HTMLElement | null = null
+let previousBodyOverflow = ''
+let bodyOverflowLocked = false
 
 const hasFooterSlot = computed(() => Boolean(slots.footer))
+
+function releaseBodyScroll() {
+  if (!bodyOverflowLocked) return
+  document.body.style.overflow = previousBodyOverflow
+  bodyOverflowLocked = false
+}
+
+function lockBodyScroll() {
+  if (bodyOverflowLocked) return
+  previousBodyOverflow = document.body.style.overflow
+  document.body.style.overflow = 'hidden'
+  bodyOverflowLocked = true
+}
 
 watch(
   () => props.open,
   async (open) => {
-    document.body.style.overflow = open ? 'hidden' : ''
     if (open) {
+      lockBodyScroll()
+      window.addEventListener('keydown', onKeydown)
       previouslyFocused = document.activeElement as HTMLElement | null
       await nextTick()
       closeButtonRef.value?.$el.focus({ preventScroll: true })
-    } else if (previouslyFocused) {
-      previouslyFocused.focus({ preventScroll: true })
-      previouslyFocused = null
+      return
     }
+    window.removeEventListener('keydown', onKeydown)
+    releaseBodyScroll()
+    previouslyFocused?.focus({ preventScroll: true })
+    previouslyFocused = null
   },
   { immediate: true, flush: 'post' },
-)
-
-watch(
-  () => props.open,
-  (open) => {
-    if (open) {
-      window.addEventListener('keydown', onKeydown)
-    } else {
-      window.removeEventListener('keydown', onKeydown)
-    }
-  },
-  { immediate: true },
 )
 
 const FOCUSABLE_SELECTOR =
@@ -86,7 +89,7 @@ function onKeydown(event: KeyboardEvent) {
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown)
-  document.body.style.overflow = ''
+  releaseBodyScroll()
 })
 
 const styles = stylex.create({

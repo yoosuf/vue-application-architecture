@@ -31,7 +31,7 @@ const styles = stylex.create({
   <span
     v-bind="stylex.attrs(styles.root)"
     :aria-label="`Rated ${props.value} out of 5`"
-    role="text"
+    role="img"
   >
     <Star
       :size="14"

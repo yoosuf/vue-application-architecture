@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as stylex from '@stylexjs/stylex'
 import Loader from '../atoms/Loader.vue'
-import { colors } from '../../styles/tokens.stylex'
+import { colors, layout, radii } from '../../styles/tokens.stylex'
 
 defineProps<{
   loading?: boolean
@@ -10,11 +10,11 @@ defineProps<{
 const styles = stylex.create({
   main: {
     flex: 1,
-    scrollMarginTop: 72,
+    scrollMarginTop: layout.headerHeight,
     ':focus-visible': {
       outline: 'none',
       boxShadow: `inset 0 0 0 3px ${colors.accent}`,
-      borderRadius: 4,
+      borderRadius: radii.sm,
     },
   },
   loading: {

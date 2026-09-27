@@ -19,6 +19,7 @@
     "demo/**/*.ts",
     "demo/**/*.vue",
     "config/**/*.ts",
+    "eslint.config.ts",
     "vite.config.ts",
     "vitest.config.ts"
   ]

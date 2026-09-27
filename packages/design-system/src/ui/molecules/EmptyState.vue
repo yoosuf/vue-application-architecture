@@ -54,6 +54,7 @@ const styles = stylex.create({
     color: colors.textPrimary,
   },
   message: {
+    margin: 0,
     maxWidth: '34ch',
     fontSize: typography.sizeBase,
     lineHeight: typography.leadingNormal,

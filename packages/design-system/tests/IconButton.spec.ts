@@ -14,6 +14,16 @@ describe('IconButton', () => {
     expect(wrapper.get('button').attributes('aria-pressed')).toBe('true')
   })
 
+  it('omits aria-pressed when it is not a toggle', () => {
+    const wrapper = mount(IconButton, { props: { label: 'x' } })
+    expect(wrapper.get('button').attributes('aria-pressed')).toBeUndefined()
+  })
+
+  it('exposes the unpressed state', () => {
+    const wrapper = mount(IconButton, { props: { label: 'x', pressed: false } })
+    expect(wrapper.get('button').attributes('aria-pressed')).toBe('false')
+  })
+
   it('disables the button', () => {
     const wrapper = mount(IconButton, { props: { label: 'x', disabled: true } })
     expect(wrapper.get('button').attributes('disabled')).toBeDefined()

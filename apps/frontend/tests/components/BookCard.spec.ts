@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { BookCard } from '@/modules/catalog'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
+import { formatCurrency } from '@/modules/core'
 import type { Book } from '@vue-application-architecture/types/book'
 
 const RouterLinkStub = {
@@ -86,7 +87,7 @@ describe('BookCard', () => {
     expect(wrapper.find('button.shoe-cta').exists()).toBe(false)
     expect(wrapper.find('[aria-label*="out of 5"]').exists()).toBe(true)
     expect(wrapper.get('[aria-label^="Price"]').text()).toContain(
-      (book.priceCents / 100).toFixed(2),
+      formatCurrency(book.priceCents),
     )
   })
 })

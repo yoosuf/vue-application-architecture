@@ -3,15 +3,14 @@ import {
   ALL_CATEGORIES,
   useCatalogStore,
 } from '@/modules/catalog/stores/catalog.store'
-import { books } from '@/modules/catalog/mocks/books'
-import { BOOK_COUNT } from '@/modules/catalog/mocks/books'
+import { BOOK_COUNT, books } from '@/modules/catalog/mocks/books'
 
 describe('catalog store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })
 
-  it('exposes a deterministic catalog of 24 books', () => {
+  it('exposes a deterministic catalog of BOOK_COUNT books', () => {
     const catalog = useCatalogStore()
     expect(catalog.books).toHaveLength(BOOK_COUNT)
     expect(catalog.books).toEqual(books)
