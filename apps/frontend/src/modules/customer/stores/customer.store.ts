@@ -68,7 +68,8 @@ export const CUSTOMERS_STORAGE_KEY = 'shelf:customers'
 export const SESSION_STORAGE_KEY = 'shelf:customer-session'
 export const MAGIC_LINK_STORAGE_KEY = 'shelf:magic-login'
 
-const MAGIC_LINK_TTL_MS = 15 * 60 * 1000
+export const MAGIC_LINK_TTL_MINUTES: number = 15
+const MAGIC_LINK_TTL_MS = MAGIC_LINK_TTL_MINUTES * 60 * 1000
 
 function createId(): string {
   return typeof crypto !== 'undefined' && 'randomUUID' in crypto

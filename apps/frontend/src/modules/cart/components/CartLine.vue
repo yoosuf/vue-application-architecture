@@ -13,7 +13,7 @@ import {
 } from '../../../../../../packages/design-system/src/styles/tokens.stylex'
 import { BookCover } from '../../catalog'
 import { useCartStore } from '../stores/cart.store'
-import { formatPrice } from '../utils/money'
+import { formatCurrency } from '../../core'
 import type { Book } from '@vue-application-architecture/types/book'
 
 const props = withDefaults(
@@ -149,13 +149,13 @@ const styles = stylex.create({
       </RouterLink>
       <p v-bind="stylex.attrs(styles.meta)">by {{ props.book.author }}</p>
       <p v-if="!props.compact" v-bind="stylex.attrs(styles.unitPrice)">
-        {{ formatPrice(props.book.priceCents) }} each
+        {{ formatCurrency(props.book.priceCents) }} each
       </p>
     </div>
 
     <template v-if="props.compact">
       <p v-bind="stylex.attrs(styles.lineTotal)">
-        {{ formatPrice(lineTotal) }}
+        {{ formatCurrency(lineTotal) }}
       </p>
       <IconButton
         :label="`Remove ${props.book.title} from cart`"
@@ -169,7 +169,7 @@ const styles = stylex.create({
           :label="`Quantity of ${props.book.title}`"
         />
         <p v-bind="stylex.attrs(styles.unitPrice)">
-          {{ formatPrice(props.book.priceCents) }} each
+          {{ formatCurrency(props.book.priceCents) }} each
         </p>
       </div>
     </template>
@@ -181,7 +181,7 @@ const styles = stylex.create({
       />
 
       <p v-bind="stylex.attrs(styles.lineTotal)">
-        {{ formatPrice(lineTotal) }}
+        {{ formatCurrency(lineTotal) }}
       </p>
 
       <IconButton

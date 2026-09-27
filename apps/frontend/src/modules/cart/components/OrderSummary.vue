@@ -9,7 +9,8 @@ import {
   typography,
 } from '../../../../../../packages/design-system/src/styles/tokens.stylex'
 import { useCartStore } from '../stores/cart.store'
-import { formatPrice, SHIPPING_FREE_THRESHOLD_CENTS } from '../utils/money'
+import { formatCurrency } from '../../core'
+import { SHIPPING_FREE_THRESHOLD_CENTS } from '../utils/money'
 
 const cart = useCartStore()
 
@@ -19,18 +20,18 @@ const itemLabel = computed(() =>
 
 const shippingLabel = computed(() => {
   if (cart.count === 0) return '—'
-  return cart.shippingCents === 0 ? 'Free' : formatPrice(cart.shippingCents)
+  return cart.shippingCents === 0 ? 'Free' : formatCurrency(cart.shippingCents)
 })
 
 const shippingMessage = computed(() => {
   if (cart.count === 0) {
-    return `Free shipping on orders over ${formatPrice(SHIPPING_FREE_THRESHOLD_CENTS)}.`
+    return `Free shipping on orders over ${formatCurrency(SHIPPING_FREE_THRESHOLD_CENTS)}.`
   }
   if (cart.shippingCents === 0) {
     return 'Free shipping unlocked.'
   }
   const remaining = SHIPPING_FREE_THRESHOLD_CENTS - cart.subtotalCents
-  return `${formatPrice(Math.max(0, remaining))} away from free shipping.`
+  return `${formatCurrency(Math.max(0, remaining))} away from free shipping.`
 })
 
 const shippingProgress = computed(() => {
@@ -155,7 +156,7 @@ const styles = stylex.create({
           >
         </span>
         <span v-bind="stylex.attrs(styles.itemAmount)">{{
-          formatPrice(line.lineTotalCents)
+          formatCurrency(line.lineTotalCents)
         }}</span>
       </li>
     </ul>
@@ -165,7 +166,7 @@ const styles = stylex.create({
     <div v-bind="stylex.attrs(styles.row)">
       <span>Subtotal</span>
       <span v-bind="stylex.attrs(styles.rowValue)">{{
-        formatPrice(cart.subtotalCents)
+        formatCurrency(cart.subtotalCents)
       }}</span>
     </div>
     <div v-bind="stylex.attrs(styles.row)">
@@ -178,7 +179,7 @@ const styles = stylex.create({
     <div v-bind="stylex.attrs(styles.row, styles.total)">
       <span>Total</span>
       <span v-bind="stylex.attrs(styles.rowValue, styles.total)">
-        {{ formatPrice(cart.totalCents) }}
+        {{ formatCurrency(cart.totalCents) }}
       </span>
     </div>
 

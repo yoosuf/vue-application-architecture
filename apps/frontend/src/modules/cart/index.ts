@@ -7,7 +7,6 @@ export {
 export {
   FLAT_SHIPPING_CENTS,
   SHIPPING_FREE_THRESHOLD_CENTS,
-  formatPrice,
 } from './utils/money'
 
 export { cartRoutes } from './route'

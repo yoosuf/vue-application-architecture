@@ -23,10 +23,15 @@ import EmptyState from '@vue-application-architecture/design-system/ui/molecules
 import PageSection from '@vue-application-architecture/design-system/ui/molecules/PageSection.vue'
 import AddressForm from '../components/AddressForm.vue'
 import { BookCover, BookGrid, useCatalogStore } from '../../catalog'
-import { AddToCartButton, formatPrice } from '../../cart'
+import { AddToCartButton } from '../../cart'
+import { formatCurrency, formatDate } from '../../core'
 import { FavoriteButton, useFavoritesStore } from '../../favorites'
 import type { Order } from '../../checkout'
-import { useCustomerStore, type Address } from '../stores/customer.store'
+import {
+  MAGIC_LINK_TTL_MINUTES,
+  useCustomerStore,
+  type Address,
+} from '../stores/customer.store'
 import {
   colors,
   radii,
@@ -70,18 +75,26 @@ const firstName = computed(() => {
   const local = account.value?.email.split('@')[0] ?? ''
   return local ? `${local[0].toUpperCase()}${local.slice(1)}` : ''
 })
+const MEMBER_SINCE_OPTIONS = {
+  year: 'numeric',
+  month: 'long',
+} as const
+
 const memberSince = computed(() => {
   const created = account.value?.createdAt
   if (!created) return ''
-  return new Date(created).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'long',
-  })
+  return formatDate(created, MEMBER_SINCE_OPTIONS)
 })
 const orderCountLabel = computed(() => {
   const count = orders.value.length
   return `${count} ${count === 1 ? 'order' : 'orders'}`
 })
+const magicLinkTtlLabel = computed(
+  () =>
+    `${MAGIC_LINK_TTL_MINUTES} ${
+      MAGIC_LINK_TTL_MINUTES === 1 ? 'minute' : 'minutes'
+    }`,
+)
 
 const emailForm = reactive({
   value: '',
@@ -129,13 +142,11 @@ const newsAndDealsPref = computed({
     customer.updateNotificationPrefs({ newsAndDeals: value }),
 })
 
-function formatOrderDate(placedAt: string): string {
-  return new Date(placedAt).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
+const ORDER_DATE_OPTIONS = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+} as const
 
 function coverUrlFor(bookId: string): string | undefined {
   return catalog.findBookById(bookId)?.coverUrl
@@ -724,7 +735,7 @@ function orderAddress(order: {
                     Order {{ order.id }}
                   </p>
                   <p v-bind="stylex.attrs(styles.orderDate)">
-                    {{ formatOrderDate(order.placedAt) }} ·
+                    {{ formatDate(order.placedAt, ORDER_DATE_OPTIONS) }} ·
                     {{ itemCount(order) }}
                     {{ itemCount(order) === 1 ? 'item' : 'items' }}
                   </p>
@@ -761,7 +772,7 @@ function orderAddress(order: {
                     </span>
 
                     <span v-bind="stylex.attrs(styles.lineAmount)">{{
-                      formatPrice(line.lineTotalCents)
+                      formatCurrency(line.lineTotalCents)
                     }}</span>
                   </li>
                 </ul>
@@ -771,7 +782,7 @@ function orderAddress(order: {
                 <div v-bind="stylex.attrs(styles.row)">
                   <span>Subtotal</span>
                   <span v-bind="stylex.attrs(styles.rowValue)">{{
-                    formatPrice(order.subtotalCents)
+                    formatCurrency(order.subtotalCents)
                   }}</span>
                 </div>
                 <div v-bind="stylex.attrs(styles.row)">
@@ -779,13 +790,13 @@ function orderAddress(order: {
                   <span v-bind="stylex.attrs(styles.rowValue)">{{
                     order.shippingCents === 0
                       ? 'Free'
-                      : formatPrice(order.shippingCents)
+                      : formatCurrency(order.shippingCents)
                   }}</span>
                 </div>
                 <div v-bind="stylex.attrs(styles.row, styles.total)">
                   <span>Total</span>
                   <span v-bind="stylex.attrs(styles.rowValue, styles.total)">
-                    {{ formatPrice(order.totalCents) }}
+                    {{ formatCurrency(order.totalCents) }}
                   </span>
                 </div>
 
@@ -890,8 +901,8 @@ function orderAddress(order: {
                 your account. There is no password to set, remember, or reset.
               </p>
               <p v-bind="stylex.attrs(styles.infoText)">
-                Magic links expire 15 minutes after they're requested. Request a
-                new one any time from the Log In page.
+                Magic links expire {{ magicLinkTtlLabel }} after they're
+                requested. Request a new one any time from the Log In page.
               </p>
             </div>
 

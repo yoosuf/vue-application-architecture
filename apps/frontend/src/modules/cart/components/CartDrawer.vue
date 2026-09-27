@@ -11,7 +11,8 @@ import {
   typography,
 } from '../../../../../../packages/design-system/src/styles/tokens.stylex'
 import { useCartStore } from '../stores/cart.store'
-import { formatPrice, SHIPPING_FREE_THRESHOLD_CENTS } from '../utils/money'
+import { formatCurrency } from '../../core'
+import { SHIPPING_FREE_THRESHOLD_CENTS } from '../utils/money'
 import * as stylex from '@stylexjs/stylex'
 
 const cart = useCartStore()
@@ -19,7 +20,7 @@ const router = useRouter()
 
 const shippingLabel = computed(() => {
   if (cart.lineCount === 0) return '—'
-  return cart.shippingCents === 0 ? 'Free' : formatPrice(cart.shippingCents)
+  return cart.shippingCents === 0 ? 'Free' : formatCurrency(cart.shippingCents)
 })
 
 function goTo(path: string) {
@@ -89,7 +90,7 @@ const styles = stylex.create({
         <div v-bind="stylex.attrs(styles.row)">
           <span>Subtotal</span>
           <span v-bind="stylex.attrs(styles.rowValue)">{{
-            formatPrice(cart.subtotalCents)
+            formatCurrency(cart.subtotalCents)
           }}</span>
         </div>
         <div v-bind="stylex.attrs(styles.row)">
@@ -101,12 +102,12 @@ const styles = stylex.create({
         <div v-bind="stylex.attrs(styles.row, styles.total)">
           <span>Total</span>
           <span v-bind="stylex.attrs(styles.rowValue, styles.total)">
-            {{ formatPrice(cart.totalCents) }}
+            {{ formatCurrency(cart.totalCents) }}
           </span>
         </div>
         <p v-bind="stylex.attrs(styles.note)">
           Free shipping on orders over
-          {{ formatPrice(SHIPPING_FREE_THRESHOLD_CENTS) }}.
+          {{ formatCurrency(SHIPPING_FREE_THRESHOLD_CENTS) }}.
         </p>
       </div>
 

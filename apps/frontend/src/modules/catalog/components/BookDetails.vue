@@ -6,7 +6,8 @@ import BookGallery from './BookGallery.vue'
 import Tabs from '@vue-application-architecture/design-system/ui/molecules/Tabs.vue'
 import Rating from '@vue-application-architecture/design-system/ui/atoms/Rating.vue'
 import { FavoriteButton } from '../../favorites'
-import { AddToCartButton, formatPrice } from '../../cart'
+import { AddToCartButton } from '../../cart'
+import { formatCurrency, formatDate } from '../../core'
 import {
   colors,
   layout,
@@ -33,12 +34,11 @@ const savingsPercent = computed(() =>
 )
 const estimatedDelivery = computed(() => {
   const hash = [...book.id].reduce((sum, char) => sum + char.charCodeAt(0), 0)
-  const date = new Date(Date.now() + (2 + (hash % 4)) * 86_400_000)
-  return new Intl.DateTimeFormat('en-US', {
+  return formatDate(Date.now() + (2 + (hash % 4)) * 86_400_000, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
-  }).format(date)
+  })
 })
 
 const styles = stylex.create({
@@ -292,14 +292,14 @@ const styles = stylex.create({
           <span v-bind="stylex.attrs(styles.priceGroup)">
             <span v-bind="stylex.attrs(styles.priceLine)">
               <p v-bind="stylex.attrs(styles.price)">
-                {{ formatPrice(book.priceCents) }}
+                {{ formatCurrency(book.priceCents) }}
               </p>
               <p v-bind="stylex.attrs(styles.listPrice)">
-                {{ formatPrice(book.listPriceCents) }}
+                {{ formatCurrency(book.listPriceCents) }}
               </p>
             </span>
             <p v-if="savingsCents > 0" v-bind="stylex.attrs(styles.saveBadge)">
-              Save {{ formatPrice(savingsCents) }} ({{ savingsPercent }}%)
+              Save {{ formatCurrency(savingsCents) }} ({{ savingsPercent }}%)
             </p>
           </span>
           <p v-bind="stylex.attrs(styles.status)">

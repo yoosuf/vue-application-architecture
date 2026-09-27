@@ -4,7 +4,7 @@ import { computed, useSlots } from 'vue'
 import BookCover from './BookCover.vue'
 import BookMeta from './BookMeta.vue'
 import Rating from '@vue-application-architecture/design-system/ui/atoms/Rating.vue'
-import { formatPrice } from '../../cart'
+import { formatCurrency } from '../../core'
 import {
   focusRing,
   reducedMotion,
@@ -113,8 +113,8 @@ const styles = stylex.create({
           <Rating :value="book.rating" />
           <span
             v-bind="stylex.attrs(styles.price)"
-            :aria-label="`Price ${formatPrice(book.priceCents)}`"
-            >{{ formatPrice(book.priceCents) }}</span
+            :aria-label="`Price ${formatCurrency(book.priceCents)}`"
+            >{{ formatCurrency(book.priceCents) }}</span
           >
         </div>
         <div v-if="hasFooter" v-bind="stylex.attrs(styles.footerRow)">

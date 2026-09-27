@@ -8,7 +8,7 @@ import EmptyState from '@vue-application-architecture/design-system/ui/molecules
 import FormSection from '@vue-application-architecture/design-system/ui/molecules/FormSection.vue'
 import PageSection from '@vue-application-architecture/design-system/ui/molecules/PageSection.vue'
 import { OrderSummary, useCartStore } from '../../cart'
-import { formatPrice } from '../../cart'
+import { formatCurrency } from '../../core'
 import { useCheckoutStore } from '../stores/checkout.store'
 import { useCustomerStore } from '../../customer'
 import {
@@ -265,26 +265,26 @@ const styles = stylex.create({
               × {{ line.quantity }}
             </span>
           </span>
-          <span>{{ formatPrice(line.lineTotalCents) }}</span>
+          <span>{{ formatCurrency(line.lineTotalCents) }}</span>
         </div>
 
         <div v-bind="stylex.attrs(styles.divider)" />
 
         <div v-bind="stylex.attrs(styles.row)">
           <span>Subtotal</span>
-          <span>{{ formatPrice(order.subtotalCents) }}</span>
+          <span>{{ formatCurrency(order.subtotalCents) }}</span>
         </div>
         <div v-bind="stylex.attrs(styles.row)">
           <span>Shipping</span>
           <span>{{
             order.shippingCents === 0
               ? 'Free'
-              : formatPrice(order.shippingCents)
+              : formatCurrency(order.shippingCents)
           }}</span>
         </div>
         <div v-bind="stylex.attrs(styles.row, styles.total)">
           <span>Total</span>
-          <span>{{ formatPrice(order.totalCents) }}</span>
+          <span>{{ formatCurrency(order.totalCents) }}</span>
         </div>
 
         <div v-bind="stylex.attrs(styles.divider)" />

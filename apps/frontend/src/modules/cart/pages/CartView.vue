@@ -13,7 +13,7 @@ import {
   typography,
 } from '../../../../../../packages/design-system/src/styles/tokens.stylex'
 import { useCartStore } from '../stores/cart.store'
-import { formatPrice } from '../utils/money'
+import { formatCurrency } from '../../core'
 
 const cart = useCartStore()
 
@@ -62,7 +62,7 @@ const styles = stylex.create({
         <p v-bind="stylex.attrs(styles.resultCount)" role="status">
           {{ cart.count }}
           {{ cart.count === 1 ? 'book' : 'books' }} ·
-          {{ formatPrice(cart.subtotalCents) }} subtotal
+          {{ formatCurrency(cart.subtotalCents) }} subtotal
         </p>
       </div>
 
