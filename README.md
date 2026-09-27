@@ -34,7 +34,7 @@ The design system is **linked** to the app with the `workspace:*` protocol in
 pnpm install
 pnpm dev           # vite dev server (apps/frontend)
 pnpm build         # production build -> apps/frontend/dist/
-pnpm build:deploy  # build + stage a root dist/ for Vercel (CI only)
+pnpm build:deploy  # ordered typecheck + a single dist/ bundle (what Vercel serves)
 pnpm test          # vitest for every workspace package (app + design system)
 pnpm lint          # eslint --fix for every workspace package
 pnpm typecheck     # vue-tsc for every workspace package

@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "pnpm --filter frontend dev",
     "build": "pnpm --filter frontend build",
-    "build:deploy": "git rev-parse --short HEAD; pnpm build && rm -rf dist && cp -R apps/frontend/dist dist",
+    "build:deploy": "git rev-parse --short HEAD; pnpm -r --workspace-concurrency=1 --if-present typecheck && pnpm --filter frontend exec vite build --outDir ../../dist --emptyOutDir",
     "preview": "pnpm --filter frontend preview",
     "demo:ds": "pnpm --filter @vue-application-architecture/design-system demo",
     "demo:types": "pnpm --filter @vue-application-architecture/types demo",

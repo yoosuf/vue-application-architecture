@@ -175,39 +175,51 @@ Three repo-root files decide how the app is verified and published:
 `dist/` of its own. Vercel, however, resolves `outputDirectory` against the
 **project root directory**, so a project left on the default `dist` fails with
 "No Output Directory named dist found after the Build completed" even though
-the build itself succeeded. Three things prevent that:
+the build itself succeeded.
 
-1. `pnpm build:deploy` builds the app and then copies `apps/frontend/dist` to
-   a root `dist/`, so **both** candidate output directories exist;
-2. the `buildCommand` is `cd "$(git rev-parse --show-toplevel || pwd)" &&
-pnpm build:deploy`, which runs the script from the repository root no matter
-   which directory Vercel treats as the project root (a bare
-   `pnpm build:deploy` fails with `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL` if the
-   root directory is `apps/frontend`); and
-3. `vercel.json` exists at both candidate roots.
+### One bundle, three packages
 
-So any Root Directory works. What must be right is the **output directory**,
-which Vercel resolves against the root directory:
+The design system and types packages are **source-first** — their `exports`
+point at `.ts`/`.vue` files, so neither has a build step and neither produces
+a deployable artifact. The publishing path is therefore:
 
-| Root Directory          | Output Directory | Where the build put it |
-| ----------------------- | ---------------- | ---------------------- |
-| empty (repository root) | `dist`           | `./dist`               |
-| `apps/frontend`         | `dist`           | `apps/frontend/dist`   |
+1. `pnpm -r --workspace-concurrency=1 --if-present typecheck` — pnpm runs the
+   workspace in dependency order, so `types` and then `design-system` are
+   type-checked before `frontend` consumes them;
+2. one `vite build` — the app's bundle inlines every design-system component
+   and type, so a deployment is a **single `dist/`**, not three artifacts.
+
+`pnpm build:deploy` runs exactly those two steps. It prints the short commit
+SHA first, so a deployment log shows what it published. `pnpm build` stays the
+local/CI shortcut and writes the same bundle to `apps/frontend/dist`.
+
+### Vercel project roots
+
+Any Root Directory works, and each emits one `dist/`:
+
+| Root Directory          | `vercel.json` that applies   | Build Command                                                                   | Output lands in      |
+| ----------------------- | ---------------------------- | ------------------------------------------------------------------------------- | -------------------- |
+| empty (repository root) | `/vercel.json`               | `cd "$(git rev-parse --show-toplevel \|\| pwd)" && pnpm build:deploy`           | `./dist`             |
+| `apps/frontend`         | `/apps/frontend/vercel.json` | `pnpm -r --workspace-concurrency=1 --if-present typecheck && pnpm build:deploy` | `apps/frontend/dist` |
+
+The `cd … --show-toplevel` prefix matters: a bare `pnpm build:deploy` resolves
+the script in the _current_ directory, so a project rooted at `apps/frontend`
+would fail with `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL`.
+
+Both files set `framework: null` and the same catch-all rewrite to `index.html`
+(the router uses `createWebHistory()`, so `/cart` and `/account/orders` must
+survive a hard refresh).
 
 **Vercel Project Settings override `vercel.json`.** If the dashboard pins a
 Build Command or Output Directory, that value wins and the file is ignored —
 the usual cause of a build that succeeds and then reports a missing output
-directory. Either set the dashboard to the values above, or clear those fields
+directory. Either set the dashboard to match the table, or clear those fields
 so `vercel.json` applies. When pasting the build command into the dashboard,
-paste it whole:
+paste it whole. A build log with no commit SHA came from an older commit (for
+example Vercel's "Redeploy", which reuses the original).
 
-```
-cd "$(git rev-parse --show-toplevel || pwd)" && pnpm build:deploy
-```
-
-`build:deploy` echoes the short commit SHA before building, so a deployment
-log tells you which commit it published — a log without that line came from an
-older commit (for example a "Redeploy" of a previous deployment).
+CI runs the same `pnpm build:deploy` and uploads the resulting `dist/`, so the
+artifact is exactly what Vercel serves.
 
 Details, including the secrets the Actions deploy needs, are in
 [`testing.md`](testing.md#ci-and-publishing).

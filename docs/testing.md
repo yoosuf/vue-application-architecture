@@ -84,10 +84,10 @@ re-read any file it rewrote before committing. CI additionally runs
 
 ## CI and publishing
 
-| Workflow                       | Trigger                                             | What it does                                                                                                                                         |
-| ------------------------------ | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/ci.yml`     | every push and PR to `main`                         | `pnpm install --frozen-lockfile`, then `format:check`, `lint`, `typecheck`, `test`, `build`; uploads `apps/frontend/dist` as the `web-dist` artifact |
-| `.github/workflows/deploy.yml` | green `CI` on `main`, or manual `workflow_dispatch` | rebuilds and publishes the app to Vercel                                                                                                             |
+| Workflow                       | Trigger                                             | What it does                                                                                                                                                   |
+| ------------------------------ | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/ci.yml`     | every push and PR to `main`                         | `pnpm install --frozen-lockfile`, then `format:check`, `lint`, `typecheck`, `test`, `build:deploy`; uploads the single root `dist/` as the `web-dist` artifact |
+| `.github/workflows/deploy.yml` | green `CI` on `main`, or manual `workflow_dispatch` | rebuilds and publishes the app to Vercel                                                                                                                       |
 
 Both use `pnpm/action-setup` (version from the root `packageManager` field),
 Node from `.nvmrc`, and a pnpm-store cache, so a run needs no configuration.
@@ -114,14 +114,15 @@ gh secret set VERCEL_PROJECT_ID --repo yoosuf/vue-application-architecture
 ```
 
 Deployment itself is configured by the two `vercel.json` files, not by the
-workflow: `buildCommand` `cd "$(git rev-parse --show-toplevel || pwd)" &&
-pnpm build:deploy`, `outputDirectory` `dist`, plus a catch-all rewrite to
-`index.html` because the router uses `createWebHistory()` and every route is
-lazy. `pnpm build:deploy` builds the app and copies `apps/frontend/dist` to a
-root `dist/`, so the deployment works whichever directory Vercel treats as the
-project root, and it prints the short commit SHA so a log shows what it
-published. Vercel's own Git integration reads the same file — use either that
-or the deploy workflow, not both. The required dashboard settings are listed in
+workflow. `pnpm build:deploy` type-checks the workspace in dependency order
+(`types` → `design-system` → `frontend`) and then runs a single `vite build`
+that inlines the design system and types into one `dist/` — the packages are
+source-first and have no build step of their own. It prints the short commit
+SHA so a log shows what it published, and the output directory is `dist` with
+a catch-all rewrite to `index.html`, because the router uses
+`createWebHistory()` and every route is lazy. Vercel's own Git integration
+reads the same file — use either that or the deploy workflow, not both. The
+required dashboard settings are listed in
 [`architecture.md`](architecture.md#build-ci-and-deployment).
 
 ### Deployment troubleshooting
