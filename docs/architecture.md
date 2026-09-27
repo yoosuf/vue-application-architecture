@@ -164,14 +164,37 @@ fix (correct facade, package specifier, or relative StyleX path).
 
 Three repo-root files decide how the app is verified and published:
 
-| File                           | Role                                                                                                                                                                                                                                |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `vercel.json`                  | `buildCommand` `pnpm --filter frontend build`, `outputDirectory` `apps/frontend/dist`, and a catch-all rewrite to `index.html` (the router uses `createWebHistory()`, so `/cart` and `/account/orders` must survive a hard refresh) |
-| `.github/workflows/ci.yml`     | every push/PR to `main`: install, `format:check`, `lint`, `typecheck`, `test`, `build`, then upload `apps/frontend/dist`                                                                                                            |
-| `.github/workflows/deploy.yml` | after a green `CI` on `main` (or manually): publish to Vercel, skipping cleanly when the Vercel secrets are absent                                                                                                                  |
+| File                           | Role                                                                                                                                                                                                                          |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vercel.json`                  | `buildCommand` `pnpm build:deploy`, `outputDirectory` `dist`, `framework: null`, and a catch-all rewrite to `index.html` (the router uses `createWebHistory()`, so `/cart` and `/account/orders` must survive a hard refresh) |
+| `.github/workflows/ci.yml`     | every push/PR to `main`: install, `format:check`, `lint`, `typecheck`, `test`, `build`, then upload `apps/frontend/dist` as an artifact                                                                                       |
+| `.github/workflows/deploy.yml` | after a green `CI` on `main` (or manually): publish to Vercel, skipping cleanly when the Vercel secrets are absent                                                                                                            |
 
-The build output is `apps/frontend/dist`, **not** a root `dist/` — the
-workspace root holds no app output, which is what makes a Vercel project
-configured with the default `dist` fail with "No Output Directory named dist
-found". Details, including the required secrets, are in
+`pnpm build` writes to `apps/frontend/dist`, and the workspace root has no
+`dist/` of its own. Vercel, however, resolves `outputDirectory` against the
+**repository root**, so a project left on the default `dist` fails with
+"No Output Directory named dist found after the Build completed". Two things
+prevent that, and the deployment works if **either** is in place:
+
+1. `vercel.json` at the root with the right `outputDirectory`; and
+2. `pnpm build:deploy`, which builds the app and then copies
+   `apps/frontend/dist` to a root `dist/`, so even a project whose dashboard
+   pins the default `dist` finds its output.
+
+Vercel project settings that matter (Dashboard → Settings → Build &
+Development Settings):
+
+| Setting          | Value                                                                                                               |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Root Directory   | empty (the repository root) — the design system and types packages are resolved from the root `pnpm-workspace.yaml` |
+| Framework Preset | none (`vercel.json` sets `framework: null`)                                                                         |
+| Install Command  | `pnpm install --frozen-lockfile`                                                                                    |
+| Build Command    | `pnpm build:deploy`                                                                                                 |
+| Output Directory | `dist`                                                                                                              |
+
+Do not point the Root Directory at `apps/frontend`: the app depends on
+workspace packages outside it, so Vercel would need "Include source files
+outside the Root Directory" turned on as well.
+
+Details, including the secrets the Actions deploy needs, are in
 [`testing.md`](testing.md#ci-and-publishing).

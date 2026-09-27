@@ -40,6 +40,7 @@ nvm use                # Node is pinned in .nvmrc (20.19.5)
 pnpm install
 pnpm dev               # vite dev server (apps/frontend)
 pnpm build             # production build -> apps/frontend/dist/
+pnpm build:deploy      # build, then stage a root dist/ for Vercel (CI only)
 pnpm test              # vitest once, every package
 pnpm test:watch        # vitest watch
 pnpm lint              # eslint --fix, every package

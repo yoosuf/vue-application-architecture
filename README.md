@@ -34,6 +34,7 @@ The design system is **linked** to the app with the `workspace:*` protocol in
 pnpm install
 pnpm dev           # vite dev server (apps/frontend)
 pnpm build         # production build -> apps/frontend/dist/
+pnpm build:deploy  # build + stage a root dist/ for Vercel (CI only)
 pnpm test          # vitest for every workspace package (app + design system)
 pnpm lint          # eslint --fix for every workspace package
 pnpm typecheck     # vue-tsc for every workspace package
@@ -43,8 +44,9 @@ pnpm format:check  # prettier --check, what CI runs
 
 Every push and pull request to `main` runs the full gate list in
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml); a green run on `main`
-publishes the app with [`vercel.json`](vercel.json)
-(see [`docs/testing.md`](docs/testing.md#ci-and-publishing)).
+publishes the app through [`vercel.json`](vercel.json), which builds with
+`pnpm build:deploy` and serves the root `dist/` (see
+[`docs/testing.md`](docs/testing.md#ci-and-publishing)).
 
 ## Guidance for AI agents
 

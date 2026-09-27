@@ -95,11 +95,30 @@ Node from `.nvmrc`, and a pnpm-store cache, so a run needs no configuration.
 The deploy step needs three repository secrets — `VERCEL_TOKEN`,
 `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` (Settings → Secrets and variables →
 Actions). Without them the publish step is skipped with a note instead of
-failing the run.
+failing the run. Get them from a machine with the Vercel CLI:
+
+```bash
+npm i -g vercel
+vercel link                       # or: vercel link --yes
+vercel pull
+cat .vercel/project.json          # {"orgId": "...", "projectId": "..."}
+```
+
+The token is `Account Settings → Tokens`; store it, the two ids, and nothing
+else:
+
+```bash
+gh secret set VERCEL_TOKEN --repo yoosuf/vue-application-architecture
+gh secret set VERCEL_ORG_ID --repo yoosuf/vue-application-architecture
+gh secret set VERCEL_PROJECT_ID --repo yoosuf/vue-application-architecture
+```
 
 Deployment itself is configured by the root `vercel.json`, not by the workflow:
-`buildCommand` `pnpm --filter frontend build`, `outputDirectory`
-`apps/frontend/dist` (the build does **not** write to a root `dist/`), and a
+`buildCommand` `pnpm build:deploy` and `outputDirectory` `dist`, plus a
 catch-all rewrite to `index.html` because the router uses `createWebHistory()`
-and every route is lazy. Vercel's own Git integration reads the same file, so
-use either that or the deploy workflow, not both.
+and every route is lazy. `pnpm build:deploy` is `pnpm build` followed by a
+copy of `apps/frontend/dist` to a root `dist/`, so the deployment works both
+with this file and with a project left on Vercel's default output directory.
+Vercel's own Git integration reads the same file — use either that or the
+deploy workflow, not both. The required dashboard settings are listed in
+[`architecture.md`](architecture.md#build-ci-and-deployment).
