@@ -172,29 +172,34 @@ Three repo-root files decide how the app is verified and published:
 
 `pnpm build` writes to `apps/frontend/dist`, and the workspace root has no
 `dist/` of its own. Vercel, however, resolves `outputDirectory` against the
-**repository root**, so a project left on the default `dist` fails with
-"No Output Directory named dist found after the Build completed". Two things
-prevent that, and the deployment works if **either** is in place:
+**project root directory**, so a project left on the default `dist` fails with
+"No Output Directory named dist found after the Build completed" even though
+the build itself succeeded. Two things prevent that:
 
-1. `vercel.json` at the root with the right `outputDirectory`; and
-2. `pnpm build:deploy`, which builds the app and then copies
-   `apps/frontend/dist` to a root `dist/`, so even a project whose dashboard
-   pins the default `dist` finds its output.
+1. `vercel.json` with the right `outputDirectory`; and
+2. `pnpm build:deploy`, which exists in **both** the root and
+   `apps/frontend` `package.json` and puts the output in `<cwd>/dist`, so the
+   directory Vercel looks for exists whichever directory it treats as the root.
 
-Vercel project settings that matter (Dashboard → Settings → Build &
-Development Settings):
+Two configurations work. Pick one and clear the other:
 
-| Setting          | Value                                                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Root Directory   | empty (the repository root) — the design system and types packages are resolved from the root `pnpm-workspace.yaml` |
-| Framework Preset | none (`vercel.json` sets `framework: null`)                                                                         |
-| Install Command  | `pnpm install --frozen-lockfile`                                                                                    |
-| Build Command    | `pnpm build:deploy`                                                                                                 |
-| Output Directory | `dist`                                                                                                              |
+|                                                             | A — repository root (preferred)                             | B — app directory                                            |
+| ----------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ |
+| Dashboard → Root Directory                                  | empty                                                       | `apps/frontend`                                              |
+| Dashboard → Include source files outside the Root Directory | n/a                                                         | **on** (the app imports workspace packages)                  |
+| `vercel.json` that applies                                  | `/vercel.json`                                              | `/apps/frontend/vercel.json`                                 |
+| Build Command                                               | `pnpm build:deploy` → builds, then copies to a root `dist/` | `pnpm build:deploy` → `vite build` into `apps/frontend/dist` |
+| Output Directory                                            | `dist`                                                      | `dist`                                                       |
 
-Do not point the Root Directory at `apps/frontend`: the app depends on
-workspace packages outside it, so Vercel would need "Include source files
-outside the Root Directory" turned on as well.
+Both set `framework: null` and the same catch-all rewrite to `index.html` (the
+router uses `createWebHistory()`, so `/cart` and `/account/orders` must survive
+a hard refresh).
+
+**Vercel Project Settings override `vercel.json`.** If the dashboard pins a
+Build Command or Output Directory, that value wins and the file is ignored — the
+usual cause of a build that succeeds and then reports a missing output
+directory. Either set the dashboard to match the table above, or clear those
+fields so `vercel.json` applies.
 
 Details, including the secrets the Actions deploy needs, are in
 [`testing.md`](testing.md#ci-and-publishing).
