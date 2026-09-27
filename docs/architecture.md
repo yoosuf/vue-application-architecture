@@ -164,42 +164,50 @@ fix (correct facade, package specifier, or relative StyleX path).
 
 Three repo-root files decide how the app is verified and published:
 
-| File                           | Role                                                                                                                                                                                                                          |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `vercel.json`                  | `buildCommand` `pnpm build:deploy`, `outputDirectory` `dist`, `framework: null`, and a catch-all rewrite to `index.html` (the router uses `createWebHistory()`, so `/cart` and `/account/orders` must survive a hard refresh) |
-| `.github/workflows/ci.yml`     | every push/PR to `main`: install, `format:check`, `lint`, `typecheck`, `test`, `build`, then upload `apps/frontend/dist` as an artifact                                                                                       |
-| `.github/workflows/deploy.yml` | after a green `CI` on `main` (or manually): publish to Vercel, skipping cleanly when the Vercel secrets are absent                                                                                                            |
+| File                           | Role                                                                                                                                                                                                      |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vercel.json`                  | `buildCommand`, `outputDirectory` `dist`, `framework: null`, and a catch-all rewrite to `index.html` (the router uses `createWebHistory()`, so `/cart` and `/account/orders` must survive a hard refresh) |
+| `apps/frontend/vercel.json`    | the same file, for projects rooted at the app directory                                                                                                                                                   |
+| `.github/workflows/ci.yml`     | every push/PR to `main`: install, `format:check`, `lint`, `typecheck`, `test`, `build`, then upload `apps/frontend/dist` as an artifact                                                                   |
+| `.github/workflows/deploy.yml` | after a green `CI` on `main` (or manually): publish to Vercel, skipping cleanly when the Vercel secrets are absent                                                                                        |
 
 `pnpm build` writes to `apps/frontend/dist`, and the workspace root has no
 `dist/` of its own. Vercel, however, resolves `outputDirectory` against the
 **project root directory**, so a project left on the default `dist` fails with
 "No Output Directory named dist found after the Build completed" even though
-the build itself succeeded. Two things prevent that:
+the build itself succeeded. Three things prevent that:
 
-1. `vercel.json` with the right `outputDirectory`; and
-2. `pnpm build:deploy`, which exists in **both** the root and
-   `apps/frontend` `package.json` and puts the output in `<cwd>/dist`, so the
-   directory Vercel looks for exists whichever directory it treats as the root.
+1. `pnpm build:deploy` builds the app and then copies `apps/frontend/dist` to
+   a root `dist/`, so **both** candidate output directories exist;
+2. the `buildCommand` is `cd "$(git rev-parse --show-toplevel || pwd)" &&
+pnpm build:deploy`, which runs the script from the repository root no matter
+   which directory Vercel treats as the project root (a bare
+   `pnpm build:deploy` fails with `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL` if the
+   root directory is `apps/frontend`); and
+3. `vercel.json` exists at both candidate roots.
 
-Two configurations work. Pick one and clear the other:
+So any Root Directory works. What must be right is the **output directory**,
+which Vercel resolves against the root directory:
 
-|                                                             | A — repository root (preferred)                             | B — app directory                                            |
-| ----------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ |
-| Dashboard → Root Directory                                  | empty                                                       | `apps/frontend`                                              |
-| Dashboard → Include source files outside the Root Directory | n/a                                                         | **on** (the app imports workspace packages)                  |
-| `vercel.json` that applies                                  | `/vercel.json`                                              | `/apps/frontend/vercel.json`                                 |
-| Build Command                                               | `pnpm build:deploy` → builds, then copies to a root `dist/` | `pnpm build:deploy` → `vite build` into `apps/frontend/dist` |
-| Output Directory                                            | `dist`                                                      | `dist`                                                       |
-
-Both set `framework: null` and the same catch-all rewrite to `index.html` (the
-router uses `createWebHistory()`, so `/cart` and `/account/orders` must survive
-a hard refresh).
+| Root Directory          | Output Directory | Where the build put it |
+| ----------------------- | ---------------- | ---------------------- |
+| empty (repository root) | `dist`           | `./dist`               |
+| `apps/frontend`         | `dist`           | `apps/frontend/dist`   |
 
 **Vercel Project Settings override `vercel.json`.** If the dashboard pins a
-Build Command or Output Directory, that value wins and the file is ignored — the
-usual cause of a build that succeeds and then reports a missing output
-directory. Either set the dashboard to match the table above, or clear those
-fields so `vercel.json` applies.
+Build Command or Output Directory, that value wins and the file is ignored —
+the usual cause of a build that succeeds and then reports a missing output
+directory. Either set the dashboard to the values above, or clear those fields
+so `vercel.json` applies. When pasting the build command into the dashboard,
+paste it whole:
+
+```
+cd "$(git rev-parse --show-toplevel || pwd)" && pnpm build:deploy
+```
+
+`build:deploy` echoes the short commit SHA before building, so a deployment
+log tells you which commit it published — a log without that line came from an
+older commit (for example a "Redeploy" of a previous deployment).
 
 Details, including the secrets the Actions deploy needs, are in
 [`testing.md`](testing.md#ci-and-publishing).
