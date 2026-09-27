@@ -18,8 +18,8 @@ Needs the `Theme` type? That's a design-system concern — it lives in
 ## Rules
 
 - Pure types only — no runtime code, no framework dependencies.
-- Used by `@vue-application-architecture/design-system` (components that receive `Book` props) and by
-  app feature modules.
+- Used by the app's feature modules. The design system must **not** depend on
+  this package (it is domain-free, enforced by its `ds/self-contained` rule).
 
 ## Local commands
 

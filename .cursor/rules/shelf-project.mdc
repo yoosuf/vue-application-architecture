@@ -1,0 +1,15 @@
+---
+description: Shelf monorepo — read before editing; vendor-neutral agent guidance
+globs:
+  - '**/*'
+alwaysApply: true
+---
+
+The project guidance is vendor-neutral and lives in `AGENTS.md` at the repo
+root. Read it before editing, then follow its links into `docs/`.
+
+Quick orientation: pnpm workspace with `apps/frontend` (Vue 3 modular monolith:
+feature modules behind `index.ts` facades) and two source-first packages,
+`packages/design-system` (domain-free UI kit) and `packages/types`. Deep docs:
+`docs/architecture.md`, `docs/styling.md`, `docs/formatting.md`,
+`docs/testing.md`, `docs/design-system.md`, `docs/specs/bookstore.md`.

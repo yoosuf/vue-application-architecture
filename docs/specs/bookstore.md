@@ -1,6 +1,7 @@
 # Bookstore spec — cart & checkout
 
-Status: implemented on `feature/bookstore` (not yet merged to `main`)
+Status: shipped (merged to `main`; the account/address-book and cart-drawer
+polish landed in the same feature line)
 Owner: apps/frontend
 Audience: engineers and AI agents working on the Shelf bookstore surface
 
@@ -10,8 +11,8 @@ Shelf becomes a small e-commerce book store in the spirit of A Book Apart:
 browse the catalog, add books to a cart, and check out against a mock
 payment flow. Prices, cart provisioning, and order placement are
 client-side only — there is no backend. The existing catalog module's fake
-data (faker seed 2026, 24 books) is extended with a price; cart and checkout
-are new sibling feature modules in the modular monolith.
+data (faker seed 2026, `BOOK_COUNT = 100`) is extended with a price; cart and
+checkout are new sibling feature modules in the modular monolith.
 
 ## 2. Goals
 
@@ -27,7 +28,9 @@ are new sibling feature modules in the modular monolith.
 ## 3. Out of scope (deliberately)
 
 - Real payment processing, shipping carriers, taxes, discount codes.
-- Account creation / login, order history.
+- Passwords, server sessions, or a real mail provider (the `customer` module
+  added magic-link auth and order history after this spec; see
+  `../architecture.md`).
 - Server persistence or a checkout API (multi-tab sync is not guaranteed).
 - Stock management / backorders.
 
@@ -136,8 +139,7 @@ across `tokens.stylex.ts`, `themes.stylex.ts` and `tokens.css`.
 - `CartLine` — cover thumb, title/details link, unit price, stepper, line
   total, remove.
 - `OrderSummary` — subtotal / shipping / total panel (free-shipping note).
-- `utils/money.ts` — `formatPrice(cents)` (Intl `en-US` USD) + the two
-  shipping constants.
+- `utils/money.ts` — the two shipping constants.
 - `CartView` — empty state vs. line list + summary + CTAs.
 
 ### `checkout` module
@@ -148,10 +150,14 @@ across `tokens.stylex.ts`, `themes.stylex.ts` and `tokens.css`.
 
 ## 8. Currency & formatting
 
-All money is integer **cents**. Display is centralized in
-`formatPrice(cents)` (`Intl.NumberFormat('en-US', { style: 'currency',
-currency: 'USD' })`). Never string-concatenate or float-round money in
-components.
+All money is integer **cents**. Display is centralized in `formatCurrency()`
+(`modules/core/utils/format.ts`, Intl `en-US` USD, cached formatters), reached
+through the `core` facade — `formatCurrency(cents)` takes cents and returns
+`$12.34`. Never string-concatenate or float-round money in components. Dates
+go through the same module's `formatDate()`, which takes a `Date`, epoch
+milliseconds, or an ISO string, accepts any `Intl.DateTimeFormatOptions` (so
+`dateStyle`/`timeStyle` cover date-times) and returns `—` (`EMPTY_VALUE`) for
+unparseable input.
 
 ## 9. Accessibility
 
@@ -176,17 +182,74 @@ components.
 - [x] Boundary lint passes: `cart`/`checkout` never import app internals or
       sibling module internals.
 
-## 11. Verification
+## 11. Implementation conventions
+
+Everything the storefront modules must keep intact. Generic architecture rules
+live in [`../architecture.md`](../architecture.md); money/date rules in
+[`../formatting.md`](../formatting.md).
+
+### Facade-only dependencies
+
+`cart` and `checkout` import each other, `catalog`, `customer`, and `core`
+through their public `index.ts` only, and never `app/` or a sibling's
+internals:
+
+```ts
+import { AddToCartButton, useCartStore } from '../../cart' // ok
+import { formatCurrency } from '../../core' // ok (core facade)
+import { useCartStore } from '../../cart/stores/cart.store' // lint error
+```
+
+`cart` cross-reads the catalog store through the `catalog` facade to resolve
+each line's book, exactly as `favorites` does. Money formatting deliberately
+lives in `core`, not in `cart`, so `catalog` and `customer` do not have to
+depend on the cart module to render a price.
+
+### Cart UX
+
+- Any "Add to Cart" action (`AddToCartButton`) also opens the drawer via
+  `cart.openCart()`; the header `CartLink` button toggles it.
+- The design-system `Drawer` molecule owns the scrim, Escape/close button,
+  focus trap and restore, and scroll lock. The cart module only supplies
+  content and CTAs (Checkout → `/checkout`, View Cart → `/cart`), closing the
+  drawer before navigating.
+- `CartLine` has a `compact` variant for the drawer and the full variant for
+  `CartView`.
+- `OrderSummary` is the single subtotal/shipping/total panel, reused by
+  `CartView`, `CartDrawer`, and the checkout sidebar.
+
+### Checkout flow
+
+1. Validate the form; errors are presentational via the `TextField` `error`
+   prop.
+2. `checkout.placeOrder(details)` snapshots `cart.entries` + totals, clears the
+   cart, and stores `lastOrder` (order id `SHELF-YYYYMMDD-######`).
+3. `CheckoutView` renders the confirmation from `lastOrder` (id, lines, totals,
+   ship-to address) and, when a customer is signed in, calls
+   `customer.recordOrder(order)` so it shows up in the account history at
+   `/account/orders`. The shipping group is prefilled from the signed-in
+   customer's shipping address (falling back to primary).
+
+### Storage
+
+Keys are prefixed `shelf:` — `shelf:cart` for the cart, plus `shelf:customers`,
+`shelf:customer-session`, `shelf:magic-login` for the account. Parsing is
+defensive (try/catch plus shape checks). `isCartOpen` and `checkout.lastOrder`
+are deliberately not persisted.
+
+## 12. Verification
 
 ```bash
 pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
 
-Coverage added: DS atoms (TextField, QuantityStepper), app stores (cart,
-checkout), `AddToCartButton`, and end-to-end router flows
-(empty/line cart + checkout-to-confirmation).
+Coverage: `tests/stores/cart.store.spec.ts`,
+`tests/stores/checkout.store.spec.ts`, `tests/components/AddToCartButton.spec.ts`,
+`tests/components/CartDrawer.spec.ts`, the checkout-to-confirmation flows in
+`tests/router.spec.ts`, the formatter suite in `tests/utils/format.spec.ts`,
+and the DS atoms `packages/design-system/tests/{TextField,QuantityStepper,Drawer}.spec.ts`.
 
-## 12. Future work
+## 13. Future work
 
 - Shipping/tax providers, promo codes, order history.
 - `lastOrder` receipt persistence and a printable receipt.

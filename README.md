@@ -7,6 +7,8 @@ An opinionated Vue.js reference architecture demonstrating scalable application 
 ├── apps/frontend           # the deployable Vue 3 app
 ├── packages/design-system  # @vue-application-architecture/design-system — presentational UI + tokens
 ├── packages/types          # @vue-application-architecture/types — shared domain types
+├── AGENTS.md               # agent guidance (any AI tool) + index of docs/
+├── docs/                   # architecture, styling, formatting, testing, product specs
 ├── pnpm-workspace.yaml
 └── .npmrc                  # registry pinned to npmjs (environment has a private registry)
 ```
@@ -36,6 +38,25 @@ pnpm typecheck     # vue-tsc for every workspace package
 pnpm format        # prettier across sources
 ```
 
+## Guidance for AI agents
+
+[`AGENTS.md`](AGENTS.md) is the single entry point for **any** AI tool (or new
+human) and is plain Markdown with no tool-specific config. It states the rules,
+the commands, and links to the deep docs:
+
+| Doc | Covers |
+| --- | --- |
+| [`docs/architecture.md`](docs/architecture.md) | modules, facades, stores, routes, how the boundary lint rule works |
+| [`docs/styling.md`](docs/styling.md) | StyleX + Vite + Vue, relative-import rule, debugging |
+| [`docs/formatting.md`](docs/formatting.md) | currency and date formatters |
+| [`docs/testing.md`](docs/testing.md) | Vitest setup, conventions, where tests live |
+| [`docs/design-system.md`](docs/design-system.md) | exports map, kit vs. app, rules for new components |
+| [`docs/specs/bookstore.md`](docs/specs/bookstore.md) | cart/checkout product spec and conventions |
+
+Tools that look for their own file read a one-line pointer: `CLAUDE.md`,
+`GEMINI.md`, `.cursor/rules/shelf-project.mdc`,
+`.github/instructions/agent-guidance.instructions.md`, and `opencode.json`.
+
 ## Boundaries
 
 - The app is a **modular monolith**: feature modules import the design system
@@ -61,4 +82,7 @@ StyleX's resolver visits StyleX-using imports statically, so:
 Both mechanisms compile into the app's single stylesheet; CSS output is
 identical whether the stylized code lives in the app or the design system.
 
-See `apps/frontend/README.md` for the full app walkthrough.
+The two packages document themselves in place:
+`packages/design-system/README.md` (tokens, theming, component reference) and
+`packages/types/README.md` (the domain types). For the app itself, read
+[`docs/architecture.md`](docs/architecture.md).
