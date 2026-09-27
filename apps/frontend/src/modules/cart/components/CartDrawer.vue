@@ -38,6 +38,16 @@ const styles = stylex.create({
     flexDirection: 'column',
     gap: spacing.xs,
   },
+  actions: {
+    display: 'flex',
+    alignItems: 'stretch',
+    gap: spacing.sm,
+  },
+  action: {
+    flex: 1,
+    minWidth: 0,
+    display: 'flex',
+  },
   row: {
     display: 'flex',
     alignItems: 'center',
@@ -111,10 +121,29 @@ const styles = stylex.create({
         </p>
       </div>
 
-      <AppButton size="lg" @click="goTo('/checkout')">Checkout</AppButton>
-      <AppButton variant="secondary" @click="goTo('/cart')">
-        View Cart
-      </AppButton>
+      <AppButton size="lg" block @click="goTo('/checkout')">Checkout</AppButton>
+      <div v-bind="stylex.attrs(styles.actions)">
+        <span v-bind="stylex.attrs(styles.action)">
+          <AppButton
+            variant="secondary"
+            size="sm"
+            block
+            @click="goTo('/cart')"
+          >
+            View Cart
+          </AppButton>
+        </span>
+        <span v-bind="stylex.attrs(styles.action)">
+          <AppButton
+            variant="secondary"
+            size="sm"
+            block
+            @click="goTo('/')"
+          >
+            Explore more books
+          </AppButton>
+        </span>
+      </div>
     </template>
   </Drawer>
 </template>

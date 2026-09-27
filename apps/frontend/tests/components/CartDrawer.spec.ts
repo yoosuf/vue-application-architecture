@@ -60,6 +60,30 @@ describe('CartDrawer', () => {
     expect(wrapper.text()).toContain('Subtotal')
     expect(wrapper.text()).toContain('Checkout')
     expect(wrapper.text()).toContain('View Cart')
+    expect(wrapper.text()).toContain('Explore more books')
+  })
+
+  it('closes the drawer and keeps browsing from the explore action', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const book = useCatalogStore().books[0]
+    const cart = useCartStore()
+    cart.addBook(book.id)
+    cart.openCart()
+
+    const router = routerFor()
+    const wrapper = await mountDrawer(pinia, router)
+
+    const explore = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Explore more books'))
+    expect(explore).toBeDefined()
+    await explore!.trigger('click')
+    await flushPromises()
+
+    expect(cart.isCartOpen).toBe(false)
+    expect(router.currentRoute.value.name).toBe('explore')
+    wrapper.unmount()
   })
 
   it('closes the drawer and goes to checkout when Checkout is clicked', async () => {

@@ -157,6 +157,7 @@ describe('router', () => {
     expect(wrapper.get('h1').text()).toBe('Your Cart')
     expect(wrapper.text()).toContain(book.title)
     expect(wrapper.text()).toContain('Proceed to Checkout')
+    expect(wrapper.text()).toContain('Explore more books')
   })
 
   it('checks out a cart into an order confirmation', async () => {

@@ -211,8 +211,11 @@ depend on the cart module to render a price.
   `cart.openCart()`; the header `CartLink` button toggles it.
 - The design-system `Drawer` molecule owns the scrim, Escape/close button,
   focus trap and restore, and scroll lock. The cart module only supplies
-  content and CTAs (Checkout → `/checkout`, View Cart → `/cart`), closing the
-  drawer before navigating.
+  content and CTAs, closing the drawer before navigating: a full-width
+  **Checkout** → `/checkout`, then **View Cart** → `/cart` and **Explore more
+  books** → `/` side by side. `CartView` offers the same pair as **Proceed to
+  Checkout** and **Explore more books** under the order summary, so a filled
+  cart always offers a checkout path and a way back to the catalog.
 - `CartLine` has a `compact` variant for the drawer and the full variant for
   `CartView`.
 - `OrderSummary` is the single subtotal/shipping/total panel, reused by

@@ -82,7 +82,7 @@ const styles = stylex.create({
             Proceed to Checkout
           </AppButton>
           <AppButton variant="secondary" :to="{ name: 'explore' }">
-            Continue Shopping
+            Explore more books
           </AppButton>
         </div>
       </div>
