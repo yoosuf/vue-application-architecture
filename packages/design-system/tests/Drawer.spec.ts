@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { defineComponent, nextTick, ref } from 'vue'
 import Drawer from '../src/ui/molecules/Drawer.vue'
 
 const slots = {
@@ -38,6 +38,33 @@ describe('Drawer', () => {
     expect(wrapper.text()).toContain('Your Cart')
     expect(wrapper.text()).toContain('Drawer body')
     expect(wrapper.get('#demo-footer').text()).toBe('Pay now')
+  })
+
+  it('renders the footer when the footer slot appears after mount', async () => {
+    const Host = defineComponent({
+      components: { Drawer },
+      setup() {
+        return { withFooter: ref(false) }
+      },
+      template: `
+        <Drawer :open="true" title="Your Cart">
+          <p>Drawer body</p>
+          <template v-if="withFooter" #footer>
+            <button id="late-footer">Pay now</button>
+          </template>
+        </Drawer>
+      `,
+    })
+    const wrapper = mount(Host, { attachTo: document.body })
+    expect(wrapper.find('footer').exists()).toBe(false)
+
+    wrapper.vm.withFooter = true
+    await nextTick()
+    expect(wrapper.get('#late-footer').text()).toBe('Pay now')
+
+    wrapper.vm.withFooter = false
+    await nextTick()
+    expect(wrapper.find('footer').exists()).toBe(false)
   })
 
   it('emits close from the close button', async () => {

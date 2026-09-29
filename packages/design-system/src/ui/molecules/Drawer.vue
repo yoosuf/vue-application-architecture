@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
+import { nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 import * as stylex from '@stylexjs/stylex'
 import { X } from 'lucide-vue-next'
 import IconButton from '../atoms/IconButton.vue'
@@ -26,8 +26,6 @@ const closeButtonRef = ref<InstanceType<typeof IconButton> | null>(null)
 let previouslyFocused: HTMLElement | null = null
 let previousBodyOverflow = ''
 let bodyOverflowLocked = false
-
-const hasFooterSlot = computed(() => Boolean(slots.footer))
 
 function releaseBodyScroll() {
   if (!bodyOverflowLocked) return
@@ -229,7 +227,7 @@ const styles = stylex.create({
           <slot />
         </div>
 
-        <footer v-if="hasFooterSlot" v-bind="stylex.attrs(styles.footer)">
+        <footer v-if="slots.footer" v-bind="stylex.attrs(styles.footer)">
           <slot name="footer" />
         </footer>
       </div>

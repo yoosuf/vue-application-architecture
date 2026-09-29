@@ -1,7 +1,7 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { createPinia, setActivePinia, type Pinia } from 'pinia'
-import { defineComponent } from 'vue'
+import { defineComponent, nextTick } from 'vue'
 import CartDrawer from '@/modules/cart/components/CartDrawer.vue'
 import { useCartStore } from '@/modules/cart/stores/cart.store'
 import { useCatalogStore } from '@/modules/catalog/stores/catalog.store'
@@ -61,6 +61,30 @@ describe('CartDrawer', () => {
     expect(wrapper.text()).toContain('Checkout')
     expect(wrapper.text()).toContain('View Cart')
     expect(wrapper.text()).toContain('Explore more books')
+  })
+
+  it('shows the footer actions as soon as an item is added to an empty cart', async () => {
+    const pinia = createPinia()
+    setActivePinia(pinia)
+    const book = useCatalogStore().books[0]
+    const cart = useCartStore()
+    cart.openCart()
+
+    const wrapper = await mountDrawer(pinia, routerFor())
+    expect(wrapper.find('footer').exists()).toBe(false)
+
+    cart.addBook(book.id)
+    await nextTick()
+
+    const footer = wrapper.get('footer')
+    expect(footer.text()).toContain('Subtotal')
+    expect(footer.text()).toContain('Checkout')
+    expect(footer.text()).toContain('View Cart')
+    expect(footer.text()).toContain('Explore more books')
+
+    cart.removeBook(book.id)
+    await nextTick()
+    expect(wrapper.find('footer').exists()).toBe(false)
   })
 
   it('closes the drawer and keeps browsing from the explore action', async () => {
